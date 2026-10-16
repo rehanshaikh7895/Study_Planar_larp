@@ -18,17 +18,16 @@ import {
   Flame,
   ShieldCheck,
   Star,
-  MessageSquare,
 } from 'lucide-react';
 
 const MASCOT_QUOTES = [
   "“Bhai reels band kar, PadhloShawtys pe focus timer laga aur lock in kar!” 🔥",
-  "“Agar aaj nahi padha toh kal paper me ceiling ginega! 😭 Bas start karo!”",
-  "“Syllabus pahad lag raha hai? 45-minute sprint lagao, sab cover hoga! ⚡”",
-  "“Academic Weapon arc loading... Ek Pomodoro session aur! 🎯”",
-  "“Padhlo shawtys! Result ke din full swag me ghumna hai na? 🏆”",
-  "“Dopamine reels dekhne me nahi, syllabus tick karne me hai! 🧠”",
-  "“Kal padhunga = kabhi nahi padhunga. Abhi timer on kar! 🚀”",
+  "“Agar aaj nahi padha toh kal paper me ceiling ginega! 😭 Bas ek sprint start karo.”",
+  "“Syllabus pahad lag raha hai? 45-min ka block bana, sab sort ho jayega.” ⚡",
+  "“Academic Weapon arc loading... Dopamine reels me nahi, checklist tick karne me hai! 🎯”",
+  "“Padhlo shawtys! Result ke din full swag me scorecard dikhana hai na? 🏆”",
+  "“Ek 25-minute Pomodoro session aur... Phir confidence dekh apna!” 🚀",
+  "“Kal padhunga = kabhi nahi padhunga. Abhi timer on kar aur lock in ho ja.” 🧠",
 ];
 
 export const LandingView: React.FC = () => {
@@ -102,9 +101,8 @@ export const LandingView: React.FC = () => {
     <div className="space-y-24 pb-16 animate-in fade-in duration-300">
       {/* 1. Hero Section with Interactive Mascot & Scroll-Driven Scale */}
       <section ref={heroRef} className="relative pt-6 sm:pt-10">
-        {/* Soft colorful backdrop orbs for rich modern white UI */}
-        <div className="absolute top-10 left-1/4 -translate-x-1/2 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-10 right-1/4 w-96 h-96 bg-pink-400/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Subtle, clean monochrome dot background */}
+        <div className="absolute inset-0 bg-dot-pattern opacity-60 pointer-events-none -z-10" />
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           {/* Left Column: Headlines & CTAs with Fade-in and Scroll Responsiveness */}
@@ -115,27 +113,36 @@ export const LandingView: React.FC = () => {
             style={{ opacity: textScrollOpacity, y: textScrollY }}
             className="lg:col-span-7 space-y-6 text-left"
           >
-            {/* Pill Badge */}
+            {/* Sleek Monochrome Pill Badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-indigo-50 to-pink-50 border border-indigo-200/80 text-indigo-700 text-xs font-mono font-bold tracking-wider uppercase shadow-sm"
+              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black text-white text-[11px] font-sans font-medium tracking-tight shadow-md border border-neutral-800 hover:scale-105 transition-transform cursor-default"
             >
-              <Zap className="w-3.5 h-3.5 text-indigo-600 fill-indigo-600" />
-              <span>PadhloShawtys OS v2.0 • The Ultimate Study Weapon</span>
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+              </span>
+              <span className="font-bold tracking-tight text-white">PadhloShawtys OS</span>
+              <span className="text-neutral-500 font-mono text-[10px]">/</span>
+              <span className="text-neutral-300 font-mono text-[10px] tracking-wider uppercase font-semibold">v2.0</span>
             </motion.div>
 
-            {/* The Main Title requested by User */}
+            {/* The Main Title requested by User: Crisp Black-and-White Streetwear / Editorial typography */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-slate-900 leading-[1.12]"
+              className="text-4xl sm:text-5xl lg:text-[62px] font-sans font-black tracking-tight text-black leading-[1.08]"
             >
               Kyu nhi hori padhai? <br />
-              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                kyuki aap PadhloShawtys nhi use karte! 😭🔥
+              <span className="relative inline-block mt-2">
+                <span className="text-neutral-900 font-extrabold">kyuki aap </span>
+                <span className="bg-black text-white px-3.5 py-1 rounded-2xl inline-block -rotate-1 shadow-md hover:rotate-0 transition-transform">
+                  PadhloShawtys
+                </span>
+                <span className="text-neutral-900 font-extrabold"> nhi use karte! 😭🔥</span>
               </span>
             </motion.h1>
 
@@ -144,10 +151,10 @@ export const LandingView: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.35, duration: 0.8 }}
-              className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed"
+              className="text-base sm:text-lg text-neutral-600 max-w-xl leading-relaxed font-sans"
             >
               Exams sir pe hain, syllabus pahad jaisa hai aur reels scroll ho rahi hai?{' '}
-              <strong className="text-slate-900 font-semibold">PadhloShawtys</strong> aapka personalized
+              <strong className="text-black font-bold">PadhloShawtys</strong> aapka personalized
               study OS hai jo topics ko algorithmically schedule karta hai, Pomodoro se focus lock in
               karta hai, aur padhai ko ek rewarding game bana deta hai.
             </motion.p>
@@ -157,27 +164,27 @@ export const LandingView: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45, duration: 0.6 }}
-              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2"
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2"
             >
               <button
                 onClick={() => setActiveTab('scheduler')}
-                className="flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-500 hover:to-purple-500 text-white font-display font-bold text-sm shadow-[0_10px_25px_-5px_rgba(99,102,241,0.4)] transition-all duration-200 hover:scale-105 active:scale-95"
+                className="flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-black hover:bg-neutral-800 text-white font-sans font-bold text-sm shadow-[0_12px_28px_-6px_rgba(0,0,0,0.35)] transition-all duration-200 hover:scale-105 active:scale-95 group"
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
                 <span>Build My Study Plan</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('dashboard')}
-                className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-display font-semibold text-sm shadow-sm transition-all hover:scale-105 active:scale-95"
+                className="flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-white hover:bg-neutral-50 text-black border-2 border-black font-sans font-bold text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:scale-105 active:scale-95"
               >
                 <span>Command Center</span>
-                <ArrowRight className="w-4 h-4 text-indigo-600" />
+                <ArrowRight className="w-4 h-4 text-black" />
               </button>
 
               <button
                 onClick={loadDemoMode}
-                className="flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-display font-semibold text-xs transition-all hover:scale-105"
+                className="flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-300 font-mono font-semibold text-xs transition-all hover:scale-105"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
                 <span>Load Demo Data</span>
@@ -185,15 +192,15 @@ export const LandingView: React.FC = () => {
             </motion.div>
 
             {/* Social Trust Metrics */}
-            <div className="pt-3 flex flex-wrap items-center gap-6 text-xs text-slate-500">
-              <div className="flex items-center gap-1.5">
-                <span className="flex text-amber-500">★★★★★</span>
-                <span className="font-semibold text-slate-800">4.9/5</span>
+            <div className="pt-3 flex flex-wrap items-center gap-6 text-xs text-neutral-600">
+              <div className="flex items-center gap-1.5 font-medium">
+                <span className="flex text-black">★★★★★</span>
+                <span className="font-bold text-black font-mono">4.9/5</span>
                 <span>by 10,000+ Students</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span className="font-medium text-slate-700">100% Free & Local Privacy</span>
+                <ShieldCheck className="w-4 h-4 text-black" />
+                <span className="font-medium text-neutral-800">100% Free & Local Privacy</span>
               </div>
             </div>
           </motion.div>
@@ -204,30 +211,43 @@ export const LandingView: React.FC = () => {
             onMouseLeave={handleMouseLeave}
             className="lg:col-span-5 relative flex flex-col items-center justify-center perspective-[1000px]"
           >
-            {/* Glowing background gradient ring */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-200/50 via-purple-200/40 to-pink-200/50 rounded-full blur-2xl -z-10 scale-95" />
+            {/* Subtle monochrome ambient backdrop ring */}
+            <div className="absolute inset-0 bg-neutral-900/5 rounded-full blur-3xl -z-10 scale-95" />
 
-            {/* Interactive Speech Bubble: click to cycle humorous motivational quotes */}
+            {/* Custom Matte Obsidian Speech Capsule (NOT AI-looking, authentic SF Pro Display font) */}
             <motion.div
               key={mascotQuoteIndex}
-              initial={{ scale: 0.9, opacity: 0, y: 10 }}
+              initial={{ scale: 0.94, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               onClick={handleMascotClick}
-              className="relative z-20 mb-3 bg-white p-3.5 rounded-2xl shadow-[0_12px_30px_rgba(99,102,241,0.15)] border-2 border-indigo-200 text-slate-800 text-xs font-semibold max-w-xs cursor-pointer hover:border-indigo-400 hover:scale-105 active:scale-95 transition-all group"
-              title="Click for more motivation!"
+              whileTap={{ scale: 0.96 }}
+              className="relative z-20 mb-4 bg-[#0A0A0A] text-white p-4 sm:p-4.5 rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.35)] border border-neutral-700/80 max-w-sm cursor-pointer hover:border-neutral-500 hover:shadow-[0_24px_48px_-10px_rgba(0,0,0,0.45)] transition-all group"
+              title="Click mentor for advice + confetti!"
             >
-              <div className="flex items-start gap-2.5">
-                <MessageSquare className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5 group-hover:rotate-12 transition-transform" />
-                <div>
-                  <p className="text-slate-900 font-bold leading-snug">
-                    {MASCOT_QUOTES[mascotQuoteIndex]}
-                  </p>
-                  <div className="flex items-center justify-between mt-1 text-[10px] text-indigo-600 font-mono font-normal">
-                    <span>— The Academic Mentor</span>
-                    <span className="font-bold underline group-hover:text-pink-600">Click to change 💬</span>
-                  </div>
+              {/* Top Meta Bar */}
+              <div className="flex items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-neutral-800">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span className="font-mono text-[10px] tracking-widest text-neutral-400 uppercase font-bold">
+                    MENTOR.DISPATCH // 0{mascotQuoteIndex + 1}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-neutral-900 border border-neutral-700 text-neutral-300 font-mono text-[9px] group-hover:bg-white group-hover:text-black group-hover:border-white transition-colors font-semibold">
+                  <span>TAP TO CYCLE</span>
+                  <span className="font-bold">↻</span>
                 </div>
               </div>
+
+              {/* Punchy Desi Quote in Authentic SF Pro Display Font */}
+              <p className="text-white font-sans font-semibold text-[13px] sm:text-[14px] leading-snug tracking-tight antialiased">
+                {MASCOT_QUOTES[mascotQuoteIndex]}
+              </p>
+
+              {/* Bottom Subtle Speech Pointer Tail pointing down towards mentor */}
+              <div className="absolute -bottom-2 right-16 w-3.5 h-3.5 bg-[#0A0A0A] border-r border-b border-neutral-700/80 rotate-45 transform"></div>
             </motion.div>
 
             {/* Mascot Image Container with Scroll Scale & 3D Interactive Tilt */}
@@ -248,237 +268,237 @@ export const LandingView: React.FC = () => {
               <img
                 src="/padhlo-mascot.png"
                 alt="PadhloShawtys Mentor"
-                className="w-full h-auto drop-shadow-[0_25px_35px_rgba(99,102,241,0.28)] group-hover:drop-shadow-[0_30px_45px_rgba(236,72,153,0.35)] transition-all duration-300 select-none pointer-events-auto"
+                className="w-full h-auto drop-shadow-[0_25px_35px_rgba(0,0,0,0.18)] group-hover:drop-shadow-[0_30px_45px_rgba(0,0,0,0.28)] transition-all duration-300 select-none pointer-events-auto"
                 draggable={false}
               />
 
-              {/* Floating Badge 1: Streak */}
+              {/* Floating Badge 1: Stark Black Card */}
               <motion.div
                 animate={{ y: [0, -6, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute bottom-4 -left-2 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.08)] border border-slate-200 flex items-center gap-2.5 text-xs hover:scale-105 transition-transform"
+                className="absolute bottom-4 -left-3 bg-black text-white p-3 sm:p-3.5 rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.3)] border border-neutral-800 flex items-center gap-3 text-xs hover:scale-105 transition-transform"
               >
-                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center font-bold">
-                  <Flame className="w-5 h-5 fill-amber-400" />
+                <div className="w-8 h-8 rounded-xl bg-neutral-900 text-amber-400 flex items-center justify-center font-bold border border-neutral-800">
+                  <Flame className="w-4.5 h-4.5 fill-amber-400" />
                 </div>
                 <div>
-                  <span className="font-bold text-slate-900 block">5-Day Study Streak</span>
-                  <span className="text-[10px] text-slate-500">+75 XP per day</span>
+                  <span className="font-bold text-white block font-sans tracking-tight">5-Day Study Streak</span>
+                  <span className="text-[10px] text-neutral-400 font-mono">+75 XP TODAY</span>
                 </div>
               </motion.div>
 
-              {/* Floating Badge 2: Exam Target */}
+              {/* Floating Badge 2: Crisp White Card with 2px Black Border (Neo-minimalist) */}
               <motion.div
                 animate={{ y: [0, 6, 0] }}
                 transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute top-20 -right-3 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.08)] border border-slate-200 flex items-center gap-2.5 text-xs hover:scale-105 transition-transform"
+                className="absolute top-20 -right-3 bg-white text-black p-3 sm:p-3.5 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black flex items-center gap-3 text-xs hover:scale-105 transition-transform"
               >
-                <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center font-bold font-mono">
                   ⚡
                 </div>
                 <div>
-                  <span className="font-bold text-slate-900 block">Calculus Midterm</span>
-                  <span className="text-[10px] text-indigo-600 font-mono font-bold">In 6 Days (Target A)</span>
+                  <span className="font-bold text-black block font-sans tracking-tight">Calculus Midterm</span>
+                  <span className="text-[10px] text-neutral-600 font-mono font-semibold">In 6 Days • Target A</span>
                 </div>
               </motion.div>
 
               {/* Interactive Click Tip Pill */}
-              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-[10px] px-3 py-1 rounded-full opacity-80 group-hover:opacity-100 transition-opacity font-mono whitespace-nowrap shadow-md flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-amber-400 animate-spin" />
-                <span>Click mentor for advice ({clickCount > 0 ? `${clickCount}x clicked` : 'tap me!'})</span>
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white text-black border-2 border-black text-[10px] px-3.5 py-1 rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-mono whitespace-nowrap flex items-center gap-1.5 font-bold">
+                <Sparkles className="w-3 h-3 text-black animate-spin" />
+                <span>TAP MENTOR ({clickCount > 0 ? `${clickCount}x clicked` : 'ADVICE & CONFETTI'})</span>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* 2. Interactive Feature Bento Grid (Clean White Background Design) */}
+      {/* 2. Interactive Feature Bento Grid (Sleek Monochrome Luxury Architecture) */}
       <section className="space-y-8">
         <div className="text-center space-y-2">
-          <span className="text-xs font-mono font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+          <span className="text-xs font-mono font-bold uppercase tracking-widest text-black bg-neutral-100 px-3.5 py-1.5 rounded-full border border-neutral-300">
             Designfull Academic Architecture
           </span>
-          <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-slate-900">
+          <h2 className="text-3xl sm:text-5xl font-sans font-black tracking-tight text-black">
             Why PadhloShawtys Hits Different
           </h2>
-          <p className="text-sm text-slate-500 max-w-lg mx-auto">
-            Not another boring planner. Built with clean aesthetics, genuine algorithms, and
+          <p className="text-sm text-neutral-600 max-w-lg mx-auto font-sans">
+            Not another boring planner. Built with monochrome aesthetic precision, genuine algorithms, and
             gamification that keeps you locked in.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Card 1 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 group-hover:scale-110 transition-transform shadow-sm">
-              <CalendarCheck className="w-6 h-6" />
+          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform">
+              <CalendarCheck className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-lg font-display font-bold text-slate-900">Smart Study Scheduler</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">Smart Study Scheduler</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
               Transparent deterministic algorithm distributes your entire exam syllabus and task
               agenda across available days. It inserts rest intervals and avoids lectures or gym
               slots.
             </p>
-            <div className="pt-2 text-[11px] font-mono font-semibold text-indigo-600 flex items-center gap-1">
+            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
               <span>Urgency + Difficulty + Confidence Formula</span>
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
           {/* Card 2 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center border border-pink-100 group-hover:scale-110 transition-transform shadow-sm">
-              <Timer className="w-6 h-6" />
+          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-2 transition-transform">
+              <Timer className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-lg font-display font-bold text-slate-900">“Lock In” Pomodoro Timer</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">“Lock In” Pomodoro Timer</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
               Drift-proof circular countdown that never freezes in background tabs. Includes
               synthesized Web Audio chimes, task linking, and post-session reflection modals.
             </p>
-            <div className="pt-2 text-[11px] font-mono font-semibold text-pink-600 flex items-center gap-1">
-              <span>25m Focus / 5m Chill / Web Audio Synth</span>
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+              <span>25m Focus / 5m Chill / Audio Synth</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
           {/* Card 3 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center border border-cyan-100 group-hover:scale-110 transition-transform shadow-sm">
-              <GraduationCap className="w-6 h-6" />
+          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform">
+              <GraduationCap className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-lg font-display font-bold text-slate-900">Exam Countdown & Syllabus</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">Exam Countdown & Syllabus</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
               Real-time countdown to exam day down to the second. Matrix tracks topics with
               confidence ratings so you never waste hours reviewing chapters you already know.
             </p>
-            <div className="pt-2 text-[11px] font-mono font-semibold text-cyan-600 flex items-center gap-1">
+            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
               <span>Confidence Matrix & Real-time Tickers</span>
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
           {/* Card 4 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 group-hover:scale-110 transition-transform shadow-sm">
-              <TrendingUp className="w-6 h-6" />
+          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-2 transition-transform">
+              <TrendingUp className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-lg font-display font-bold text-slate-900">The Academic Comeback</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">The Academic Comeback</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
               Interactive Recharts charts: daily focus minutes, planned vs. actual execution, and
               subject distribution. Generates genuine insights based on verified study logs.
             </p>
-            <div className="pt-2 text-[11px] font-mono font-semibold text-emerald-600 flex items-center gap-1">
+            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
               <span>Zero Fake Stats • 100% Real Calculations</span>
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
           {/* Card 5 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100 group-hover:scale-110 transition-transform shadow-sm">
-              <Trophy className="w-6 h-6" />
+          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform">
+              <Trophy className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-lg font-display font-bold text-slate-900">Gamification (Not Cringe)</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">Gamification (Not Cringe)</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
               Earn XP for studying, level up from Procrastination Rookie to Academic Weapon, finish
               daily quests, unlock badges, and get your Spotify Wrapped-style Sunday recap!
             </p>
-            <div className="pt-2 text-[11px] font-mono font-semibold text-amber-600 flex items-center gap-1">
+            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
               <span>Levels 1-10 + Weekly Wrapped Recap</span>
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
           {/* Card 6 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 group-hover:scale-110 transition-transform shadow-sm">
-              <ShieldCheck className="w-6 h-6" />
+          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-2 transition-transform">
+              <ShieldCheck className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-lg font-display font-bold text-slate-900">Local Privacy & JSON Backup</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">Local Privacy & JSON Backup</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
               No account required. All data survives refreshes in browser localStorage. Export your
               entire backup as a JSON file or restore it anytime with one click.
             </p>
-            <div className="pt-2 text-[11px] font-mono font-semibold text-purple-600 flex items-center gap-1">
+            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
               <span>100% Client-Side Privacy Guaranteed</span>
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. Social Proof Section */}
-      <section className="p-8 sm:p-12 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-8 text-center">
+      {/* 3. Social Proof Section (Editorial Black & White Cards) */}
+      <section className="p-8 sm:p-12 rounded-3xl bg-white border border-neutral-200/90 shadow-sm space-y-8 text-center">
         <div className="space-y-2">
-          <div className="flex items-center justify-center gap-1 text-amber-400">
+          <div className="flex items-center justify-center gap-1 text-black">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-amber-400" />
+              <Star key={i} className="w-4 h-4 fill-black text-black" />
             ))}
           </div>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-slate-900">
+          <h2 className="text-2xl sm:text-4xl font-sans font-black tracking-tight text-black">
             “Kyu nhi hori thi padhai? Ab samajh aaya!”
           </h2>
-          <p className="text-xs text-slate-500">Real students on their PadhloShawtys comeback arc</p>
+          <p className="text-xs text-neutral-500 font-sans">Real students on their PadhloShawtys comeback arc</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-            <p className="text-xs text-slate-700 italic leading-relaxed">
+          <div className="p-6 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-4 hover:border-black transition-colors">
+            <p className="text-xs text-neutral-700 italic leading-relaxed font-sans">
               "Bhai sach batau toh pehle pura din nikal jata tha sochte sochte ki start kahan se karu.
               PadhloShawtys ne priority score se sab sort kar diya. GPA 2.4 se seedha 3.8!"
             </p>
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">
+            <div className="flex items-center gap-2.5 pt-2 border-t border-neutral-200">
+              <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold font-mono text-xs">
                 AK
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-900">Aman Kumar</p>
-                <p className="text-[10px] text-slate-500">Computer Science Major</p>
+                <p className="text-xs font-bold text-black font-sans">Aman Kumar</p>
+                <p className="text-[10px] text-neutral-500 font-mono">Computer Science Major</p>
               </div>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-            <p className="text-xs text-slate-700 italic leading-relaxed">
+          <div className="p-6 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-4 hover:border-black transition-colors">
+            <p className="text-xs text-neutral-700 italic leading-relaxed font-sans">
               "The Spotify Wrapped weekly recap on Sunday night is literally the best motivation.
               Seeing my 22 focus hours mapped across Organic Chem made me actually proud."
             </p>
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-pink-600 text-white flex items-center justify-center font-bold text-xs">
+            <div className="flex items-center gap-2.5 pt-2 border-t border-neutral-200">
+              <div className="w-8 h-8 rounded-full bg-neutral-900 text-white flex items-center justify-center font-bold font-mono text-xs border border-neutral-700">
                 SL
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-900">Sneha Lal</p>
-                <p className="text-[10px] text-slate-500">Biochemistry Pre-Med</p>
+                <p className="text-xs font-bold text-black font-sans">Sneha Lal</p>
+                <p className="text-[10px] text-neutral-500 font-mono">Biochemistry Pre-Med</p>
               </div>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-            <p className="text-xs text-slate-700 italic leading-relaxed">
+          <div className="p-6 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-4 hover:border-black transition-colors">
+            <p className="text-xs text-neutral-700 italic leading-relaxed font-sans">
               "Normal productivity tools boring hote hain. PadhloShawtys feels like a game where you
               level up from rookie to weapon. The chimes and streaks are addictive."
             </p>
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold text-xs">
+            <div className="flex items-center gap-2.5 pt-2 border-t border-neutral-200">
+              <div className="w-8 h-8 rounded-full bg-neutral-800 text-white flex items-center justify-center font-bold font-mono text-xs border border-neutral-600">
                 RV
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-900">Rohan Verma</p>
-                <p className="text-[10px] text-slate-500">Economics & Finance</p>
+                <p className="text-xs font-bold text-black font-sans">Rohan Verma</p>
+                <p className="text-[10px] text-neutral-500 font-mono">Economics & Finance</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. FAQ Accordion */}
+      {/* 4. FAQ Accordion (Clean High-Contrast Cards) */}
       <section className="max-w-3xl mx-auto space-y-6">
         <div className="text-center space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-slate-900">
+          <h2 className="text-2xl sm:text-4xl font-sans font-black tracking-tight text-black">
             Frequently Asked Questions
           </h2>
-          <p className="text-xs text-slate-500">Everything you need to know about PadhloShawtys</p>
+          <p className="text-xs text-neutral-500 font-sans">Everything you need to know about PadhloShawtys</p>
         </div>
 
         <div className="space-y-3">
@@ -487,21 +507,23 @@ export const LandingView: React.FC = () => {
             return (
               <div
                 key={idx}
-                className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden transition-colors"
+                className={`rounded-2xl bg-white border transition-all ${
+                  isOpen ? 'border-black shadow-md' : 'border-neutral-200/90 shadow-xs'
+                }`}
               >
                 <button
                   onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                  className="w-full p-4 text-left flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-900 hover:text-indigo-600 transition-colors"
+                  className="w-full p-4.5 text-left flex items-center justify-between text-xs sm:text-sm font-semibold text-black hover:text-neutral-700 transition-colors font-sans"
                 >
-                  <span>{faq.q}</span>
+                  <span className="pr-4">{faq.q}</span>
                   {isOpen ? (
-                    <ChevronUp className="w-4 h-4 text-indigo-600 shrink-0" />
+                    <ChevronUp className="w-4 h-4 text-black shrink-0" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                    <ChevronDown className="w-4 h-4 text-neutral-400 shrink-0" />
                   )}
                 </button>
                 {isOpen && (
-                  <div className="px-4 pb-4 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                  <div className="px-4.5 pb-4.5 text-xs text-neutral-600 leading-relaxed border-t border-neutral-100 pt-3 font-sans">
                     {faq.a}
                   </div>
                 )}
@@ -511,31 +533,34 @@ export const LandingView: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. Bottom Call To Action Banner with White Card Gradient Border */}
-      <section className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white text-center space-y-5 shadow-xl relative overflow-hidden">
-        <div className="space-y-2">
-          <span className="text-xs font-mono font-bold uppercase tracking-widest text-indigo-200">
+      {/* 5. Bottom Call To Action Banner: Jet Black Obsidian Luxury Banner */}
+      <section className="p-8 sm:p-14 rounded-3xl bg-black text-white text-center space-y-6 shadow-2xl relative overflow-hidden border border-neutral-800">
+        <div className="absolute inset-0 bg-dot-pattern opacity-20 pointer-events-none" />
+
+        <div className="relative z-10 space-y-2 max-w-2xl mx-auto">
+          <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-neutral-400 bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full inline-block">
             No Excuses • Pure Execution
           </span>
-          <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-white">
+          <h2 className="text-3xl sm:text-5xl font-sans font-black tracking-tight text-white leading-tight">
             Stop Procrastinating. PadhloShawtys pe Lock In Karo!
           </h2>
-          <p className="text-xs sm:text-sm text-indigo-100 max-w-lg mx-auto">
+          <p className="text-xs sm:text-sm text-neutral-400 max-w-lg mx-auto font-sans leading-relaxed">
             Your exams won't wait. Add your subjects, run the smart scheduler, and start your first
             25-minute focus session right now.
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-3 pt-2">
+        <div className="relative z-10 flex flex-wrap justify-center gap-3.5 pt-2">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className="px-8 py-3.5 rounded-2xl bg-white text-slate-900 hover:bg-slate-100 font-display font-bold text-sm shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
+            className="px-8 py-4 rounded-2xl bg-white text-black hover:bg-neutral-100 font-sans font-bold text-sm shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center gap-2"
           >
-            Launch Command Center ⚡
+            <span>Launch Command Center</span>
+            <Zap className="w-4 h-4 text-black fill-black" />
           </button>
           <button
             onClick={loadDemoMode}
-            className="px-6 py-3.5 rounded-2xl bg-indigo-900/40 text-white border border-white/30 font-semibold text-xs hover:bg-indigo-900/60 transition-all"
+            className="px-6 py-4 rounded-2xl bg-neutral-900 text-white border border-neutral-700 font-mono font-semibold text-xs hover:bg-neutral-800 transition-all hover:scale-105"
           >
             Load Demo Data
           </button>
@@ -544,3 +569,4 @@ export const LandingView: React.FC = () => {
     </div>
   );
 };
+

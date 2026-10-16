@@ -102,13 +102,13 @@
 
 @layer base {
   :root {
-    --bg-page: #FAFAFD;
-    --text-primary: #0F172A;
+    --bg-page: #FAFAFB;
+    --text-primary: #0A0A0A;
   }
 
   .dark {
-    --bg-page: #08090E;
-    --text-primary: #F1F5F9;
+    --bg-page: #09090B;
+    --text-primary: #FAFAFA;
   }
 
   html {
@@ -128,57 +128,61 @@
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #f4f4f5;
 }
 .dark ::-webkit-scrollbar-track {
-  background: #0d0f17;
+  background: #18181b;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #a1a1aa;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #6366f1;
+  background: #18181b;
 }
 
-/* Clean designfull background patterns */
+/* Clean monochrome dot matrix pattern */
 .bg-dot-pattern {
-  background-image: radial-gradient(rgba(99, 102, 241, 0.15) 1.5px, transparent 1.5px);
-  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1.2px, transparent 1.2px);
+  background-size: 20px 20px;
+}
+
+.dark .bg-dot-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px);
+  background-size: 20px 20px;
 }
 
 .bg-mesh-gradient {
   background: 
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.08) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.08) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(0, 0, 0, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(0, 0, 0, 0.03) 0px, transparent 50%);
 }
 
-/* Premium Card Styles */
+/* Premium Monochrome Card Styles */
 .design-card {
   background: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.03), 0 1px 3px -1px rgba(0, 0, 0, 0.02);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .design-card:hover {
-  box-shadow: 0 16px 36px -4px rgba(99, 102, 241, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
-  border-color: rgba(165, 180, 252, 0.8);
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.09), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.35);
 }
 
 .dark .design-card {
-  background: #10131E;
-  border-color: rgba(30, 41, 59, 0.9);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: #121214;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 }
 
 .dark .design-card:hover {
-  border-color: rgba(139, 92, 246, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Text glow */

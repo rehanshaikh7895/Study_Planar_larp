@@ -81,7 +81,7 @@ export const Navbar: React.FC = () => {
             onClick={() => handleNavClick('dashboard')}
             className="flex items-center gap-3 cursor-pointer group shrink-0"
           >
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 border border-indigo-200/80 shadow-sm overflow-hidden group-hover:scale-105 transition-transform duration-200">
+            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] overflow-hidden group-hover:scale-105 transition-transform duration-200">
               <img
                 src="/padhlo-mascot.png"
                 alt="PadhloShawtys Mascot"
@@ -90,40 +90,40 @@ export const Navbar: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display font-extrabold text-xl tracking-tight text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors">
-                  Padhlo<span className="text-indigo-600">Shawtys</span>
+                <span className="font-sans font-black text-xl tracking-tight text-black dark:text-white flex items-center gap-1">
+                  Padhlo<span className="bg-black text-white dark:bg-white dark:text-black px-1.5 py-0.5 rounded-md text-sm font-bold">Shawtys</span>
                 </span>
-                <span className="text-[10px] uppercase font-mono tracking-widest px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold">
+                <span className="text-[10px] uppercase font-mono tracking-widest px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 font-bold">
                   OS v2.0
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 font-mono tracking-tight hidden sm:block">
+              <p className="text-[11px] text-neutral-500 font-mono tracking-tight hidden sm:block">
                 Kyu nhi hori padhai? 😭🔥
               </p>
             </div>
           </div>
 
           {/* Gamification Stats Pill (Desktop) */}
-          <div className="hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium shadow-sm">
+          <div className="hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-xs font-medium shadow-xs">
             <div
               onClick={() => handleNavClick('gamification')}
-              className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 cursor-pointer hover:opacity-80 transition-opacity"
+              className="flex items-center gap-1.5 text-neutral-900 dark:text-neutral-100 cursor-pointer hover:opacity-80 transition-opacity"
               title="Current daily study streak"
             >
-              <Flame className="w-4 h-4 fill-amber-500 animate-bounce" />
+              <Flame className="w-4 h-4 fill-amber-500 text-amber-500 animate-bounce" />
               <span className="font-mono font-bold">{data.profile.streakDays}d Streak</span>
             </div>
 
-            <div className="w-px h-3 bg-slate-200 dark:bg-slate-700" />
+            <div className="w-px h-3 bg-neutral-300 dark:bg-neutral-700" />
 
             <div
               onClick={() => handleNavClick('gamification')}
-              className="flex items-center gap-1.5 text-indigo-600 dark:text-purple-400 cursor-pointer hover:opacity-80 transition-opacity"
+              className="flex items-center gap-1.5 text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
               title="Current level and XP progress"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 text-neutral-900 dark:text-white" />
               <span className="font-mono font-bold">Lvl {data.profile.level}</span>
-              <span className="text-slate-400 font-mono text-[10px]">
+              <span className="text-neutral-400 font-mono text-[10px]">
                 ({data.profile.currentXP}/{data.profile.targetXP} XP)
               </span>
             </div>
@@ -133,16 +133,16 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={loadDemoMode}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-all hover:scale-[1.02] shadow-xs"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-neutral-100 text-neutral-800 border border-neutral-300 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:border-neutral-700 transition-all hover:scale-[1.02] shadow-xs font-mono"
               title="Load complete sample data for academic comeback"
             >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Load Demo Data</span>
+              <Sparkles className="w-3.5 h-3.5 text-black dark:text-white" />
+              <span>Load Demo</span>
             </button>
 
             <button
               onClick={() => handleNavClick('focus')}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white shadow-[0_4px_14px_rgba(99,102,241,0.35)] transition-all duration-200 hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 shadow-md transition-all duration-200 hover:scale-105 active:scale-95 font-sans"
             >
               <Timer className="w-3.5 h-3.5" />
               <span>Lock In Now</span>
@@ -150,33 +150,33 @@ export const Navbar: React.FC = () => {
 
             <button
               onClick={toggleSound}
-              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors"
+              className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 transition-colors"
               title={data.settings.soundEnabled ? 'Sound On' : 'Sound Muted'}
               aria-label="Toggle sound"
             >
               {data.settings.soundEnabled ? (
-                <Volume2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <Volume2 className="w-4 h-4 text-black dark:text-white" />
               ) : (
-                <VolumeX className="w-4 h-4 text-slate-400" />
+                <VolumeX className="w-4 h-4 text-neutral-400" />
               )}
             </button>
 
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors"
+              className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 transition-colors"
               title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               aria-label="Toggle theme"
             >
               {isDarkMode ? (
-                <Sun className="w-4 h-4 text-amber-500" />
+                <Sun className="w-4 h-4 text-neutral-200" />
               ) : (
-                <Moon className="w-4 h-4 text-indigo-600" />
+                <Moon className="w-4 h-4 text-black" />
               )}
             </button>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 lg:hidden rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200"
+              className="p-2 lg:hidden rounded-xl bg-neutral-100 text-neutral-800 hover:bg-neutral-200"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -185,17 +185,17 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Desktop Secondary Navigation Bar */}
-        <nav className="hidden lg:flex items-center gap-1.5 mt-3 pt-2.5 border-t border-slate-200/80 dark:border-slate-800/60 overflow-x-auto scrollbar-none">
+        <nav className="hidden lg:flex items-center gap-1.5 mt-3 pt-2.5 border-t border-neutral-200/80 dark:border-neutral-800/60 overflow-x-auto scrollbar-none">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 whitespace-nowrap ${
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 whitespace-nowrap font-sans ${
                   isActive
-                    ? 'bg-indigo-600 text-white shadow-sm font-bold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-black text-white shadow-sm font-bold dark:bg-white dark:text-black'
+                    : 'text-neutral-600 hover:text-black hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800'
                 }`}
               >
                 {item.icon}
@@ -203,7 +203,9 @@ export const Navbar: React.FC = () => {
                 {item.badge && (
                   <span
                     className={`ml-1 text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                      isActive ? 'bg-white text-indigo-700 font-bold' : 'bg-slate-200 text-slate-700'
+                      isActive
+                        ? 'bg-white text-black font-bold dark:bg-black dark:text-white'
+                        : 'bg-neutral-200 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
                     }`}
                   >
                     {item.badge}
