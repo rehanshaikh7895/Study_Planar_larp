@@ -3,7 +3,6 @@ import { useApp } from '../../context/AppContext';
 import type { ScheduledSession } from '../../types';
 import {
   Sparkles,
-  Calendar,
   Clock,
   Lock,
   Unlock,
@@ -298,20 +297,19 @@ export const SchedulerView: React.FC = () => {
 
       {/* Session Cards List (Design-card white background) */}
       {filteredSessions.length === 0 ? (
-        <div className="p-12 rounded-3xl bg-white border border-dashed border-slate-300 text-center space-y-4">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-            <Calendar className="w-7 h-7" />
+        <div className="p-12 rounded-3xl bg-white border-2 border-dashed border-neutral-300 text-center space-y-4">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-neutral-100 flex items-center justify-center text-black font-bold text-xl">
+            📅
           </div>
-          <h3 className="text-base font-semibold text-slate-900">No sessions currently scheduled</h3>
-          <p className="text-xs text-slate-500 max-w-md mx-auto">
-            Click "Generate / Rebalance Plan" to evaluate all your pending tasks and upcoming exam
-            topics, prioritize them mathematically, and generate a balanced schedule!
+          <h3 className="text-base font-black text-black">No sessions scheduled? Stop LARPing 💀</h3>
+          <p className="text-xs text-neutral-500 max-w-md mx-auto leading-relaxed font-sans">
+            You have upcoming exams but zero study blocks on the calendar. That's a massive skill issue. Let the algorithm distribute your syllabus without cramming!
           </p>
           <button
             onClick={handleGenerate}
-            className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md"
+            className="px-6 py-3 rounded-2xl bg-black hover:bg-neutral-800 text-white font-bold text-xs shadow-md hover:scale-105 active:scale-95 transition-all"
           >
-            Generate My Plan
+            Generate Real Study Plan 🔥
           </button>
         </div>
       ) : (

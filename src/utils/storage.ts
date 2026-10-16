@@ -12,12 +12,14 @@ export const DEFAULT_SUBJECTS: Subject[] = [
 
 export const INITIAL_ACHIEVEMENTS: Achievement[] = [
   { id: 'first_lockin', title: 'First Lock-In', badge: '⚡', description: 'Complete your first 25-minute focus session on PadhloShawtys.', category: 'focus', progress: 0, xp: 100 },
-  { id: 'consistency_merchant', title: 'Consistency Merchant', badge: '🔥', description: 'Maintain a 3-day study streak.', category: 'streak', progress: 33, xp: 200 },
-  { id: 'no_procrastination', title: 'No More Procrastination', badge: '🎯', description: 'Complete 5 planned tasks.', category: 'tasks', progress: 0, xp: 250 },
-  { id: 'academic_weapon', title: 'Academic Weapon', badge: '🗡️', description: 'Log over 300 minutes of focus time in a single week.', category: 'academic', progress: 0, xp: 400 },
-  { id: 'night_owl', title: 'Night Owl Arc', badge: '🦉', description: 'Complete a focus session after 9:00 PM.', category: 'special', progress: 0, xp: 150 },
-  { id: 'early_bird', title: 'Dawn Patrol', badge: '🌅', description: 'Complete a study session before 9:00 AM.', category: 'special', progress: 0, xp: 150 },
-  { id: 'mastery_unlocked', title: 'Syllabus Slayer', badge: '👑', description: 'Achieve 100% confidence on all topics for an exam.', category: 'academic', progress: 0, xp: 500 },
+  { id: 'anti_larp', title: 'Anti-LARP Protocol', badge: '🚫', description: 'Stop LARPing as a student. Actually finish a 45m deep focus sprint without touching reels.', category: 'focus', progress: 0, xp: 200 },
+  { id: 'consistency_merchant', title: 'Consistency Merchant', badge: '🔥', description: 'Maintain a 3-day study streak. No cap fr fr.', category: 'streak', progress: 33, xp: 200 },
+  { id: 'aura_merchant', title: 'Aura +10,000', badge: '🗿', description: 'Maintain a 5-day study streak. Absolutely mogging everyone in your cohort.', category: 'streak', progress: 20, xp: 350 },
+  { id: 'no_procrastination', title: 'Certified Head Chef', badge: '👨‍🍳', description: 'Complete 5 planned tasks. You are now officially cooking.', category: 'tasks', progress: 0, xp: 250 },
+  { id: 'academic_weapon', title: 'Academic Weapon Arc', badge: '🗡️', description: 'Log over 300 minutes of focus time in a single week.', category: 'academic', progress: 0, xp: 400 },
+  { id: 'delulu_cured', title: 'Delulu Is Not The Solulu', badge: '🧠', description: 'Achieve 100% confidence across all syllabus topics for an exam.', category: 'academic', progress: 0, xp: 500 },
+  { id: 'night_owl', title: 'Night Owl Demon Arc', badge: '🦉', description: 'Complete a focus session after 9:00 PM.', category: 'special', progress: 0, xp: 150 },
+  { id: 'early_bird', title: 'Morning Mogger', badge: '🌅', description: 'Complete a study session before 9:00 AM.', category: 'special', progress: 0, xp: 150 },
 ];
 
 export const INITIAL_QUESTS: Quest[] = [

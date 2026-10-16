@@ -25,12 +25,14 @@ import {
 
 const MOTIVATIONAL_QUOTES = [
   "Bhai reels band kar, PadhloShawtys pe focus timer laga aur lock in kar! 😭🔥",
-  "Kyu nhi hori padhai? Ek 25-minute Pomodoro session start karo abhi ke abhi! ⚡",
-  "Academic comeback arc loading… [██████████] 99%",
-  "Sleep is essential, but high GPA is eternal. Get this study block done.",
-  "One task at a time. Clear the syllabus, clear your mind.",
-  "Future you will thank present you for locking in today.",
-  "Discipline beats motivation every single day. Let's work.",
+  "Stop LARPing as an academic weapon. Prove it by cooking today's study agenda 🗿",
+  "Aura +5,000 for finishing your first 45-minute study block without opening Instagram ⚡",
+  "Bro is 3 chapters behind and still acting nonchalant. You are cooked, hit the timer! 🚨",
+  "Delulu is not the solulu. Clear your backlog one Pomodoro block at a time 🧠",
+  "Tu padh raha hai ya bas desk pe books arrange karke topper hone ka LARP kar raha hai? 💀",
+  "Academic comeback arc loading… [██████████] 99% • Let him cook! 🔥",
+  "Agar aaj bhi nahi padha toh paper me sab tujhe mog karenge. Padhlo shawtys! 🏆",
+  "Zero yapping, pure execution. Time to lock in no cap fr fr 🎯",
 ];
 
 export const DashboardView: React.FC<{ onOpenAddTask: () => void }> = ({ onOpenAddTask }) => {

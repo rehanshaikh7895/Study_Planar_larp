@@ -21,13 +21,18 @@ import {
 } from 'lucide-react';
 
 const MASCOT_QUOTES = [
-  "“Bhai reels band kar, PadhloShawtys pe focus timer laga aur lock in kar!” 🔥",
-  "“Agar aaj nahi padha toh kal paper me ceiling ginega! 😭 Bas ek sprint start karo.”",
-  "“Syllabus pahad lag raha hai? 45-min ka block bana, sab sort ho jayega.” ⚡",
-  "“Academic Weapon arc loading... Dopamine reels me nahi, checklist tick karne me hai! 🎯”",
-  "“Padhlo shawtys! Result ke din full swag me scorecard dikhana hai na? 🏆”",
-  "“Ek 25-minute Pomodoro session aur... Phir confidence dekh apna!” 🚀",
-  "“Kal padhunga = kabhi nahi padhunga. Abhi timer on kar aur lock in ho ja.” 🧠",
+  "“Bro is LARPing as a 4.0 GPA student while scrolling brainrot reels for 3 hours straight. LOCK IN FR FR 💀🔥”",
+  "“Stop LARPing in the library staring at page 1 for 40 minutes. That's a massive skill issue, hit the timer!” 🚨",
+  "“Aura -10,000 for saying 'kal subah 5 baje uthke pura syllabus khatam karunga'. Bro you are cooked, start NOW 📉”",
+  "“Tu padh raha hai ya bas aesthetic matcha latte ke saath study vlog ka LARP kar raha hai? 😭💀”",
+  "“Syllabus dekhke moot nikal gaya? Delulu is not the solulu shawtys, 45-min sprint lagao aur cook karo!” 🔥",
+  "“Bro thinks watching a 2x YouTube summary is studying. Stop yapping and solve practice questions fr fr.” 🧠",
+  "“Aura +5,000 for finishing a Pomodoro block without touching Instagram. Academic weapon behavior 🗿⚡”",
+  "“Agar aaj bhi padhai nahi ki toh paper ke din topper tujhe mog karega. Padhlo shawtys!” 🏆",
+  "“Bro is 4 chapters behind and still acting nonchalant. You are dangerously COOKED, lock in right now!” ⏳",
+  "“Academic comeback arc tabhi shuru hoga jab reel scrolling band hogi. No cap, pure execution.” 🎯",
+  "“Bro spent 2 hours color-coding a Notion dashboard instead of solving 1 problem. Olympic level LARPing 💀”",
+  "“Padhlo shawtys warna viva me external examiner ke saamne NPC ban jaoge fr fr! 😭”",
 ];
 
 export const LandingView: React.FC = () => {
@@ -153,10 +158,10 @@ export const LandingView: React.FC = () => {
               transition={{ delay: 0.35, duration: 0.8 }}
               className="text-base sm:text-lg text-neutral-600 max-w-xl leading-relaxed font-sans"
             >
-              Exams sir pe hain, syllabus pahad jaisa hai aur reels scroll ho rahi hai?{' '}
-              <strong className="text-black font-bold">PadhloShawtys</strong> aapka personalized
-              study OS hai jo topics ko algorithmically schedule karta hai, Pomodoro se focus lock in
-              karta hai, aur padhai ko ek rewarding game bana deta hai.
+              Exams sir pe hain, syllabus pahad jaisa hai aur bro aesthetic notes ka LARP kar raha hai?{' '}
+              Stop the cap and lock in fr fr! <strong className="text-black font-bold">PadhloShawtys</strong>{' '}
+              aapka algorithmic study OS hai jo topics ko plan karta hai, drift-proof Pomodoro se focus lock karta hai,
+              aur aapko completely cooked se certified academic weapon bana deta hai 🗿🔥
             </motion.p>
 
             {/* CTAs */}

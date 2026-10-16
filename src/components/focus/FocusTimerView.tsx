@@ -9,7 +9,6 @@ import {
   SkipForward,
   Volume2,
   VolumeX,
-  Sparkles,
   Flame,
   Clock,
 } from 'lucide-react';
@@ -473,24 +472,23 @@ export const FocusTimerView: React.FC = () => {
       {/* Reset Confirmation Modal */}
       {showResetConfirm && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-amber-300 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-xl text-center">
-            <h3 className="text-base font-bold text-slate-900">Reset Current Focus Block?</h3>
-            <p className="text-xs text-slate-600">
-              You're currently in the middle of a focus block. Resetting now will discard the
-              remaining countdown.
+          <div className="bg-white border-2 border-black rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-center font-sans">
+            <h3 className="text-lg font-black text-black">Reset Timer? Major Aura Loss 💀</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
+              Resetting now is textbook LARPing. You'll lose -2,000 Aura and your academic comeback arc will stall. Sure you wanna give up?
             </p>
             <div className="flex justify-center gap-3 pt-2">
               <button
                 onClick={() => setShowResetConfirm(false)}
-                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold"
+                className="px-5 py-2.5 rounded-xl bg-black text-white text-xs font-bold shadow-sm hover:scale-105 active:scale-95 transition-all"
               >
-                Keep Going
+                Nah, I'm Locking In 🗿
               </button>
               <button
                 onClick={executeReset}
-                className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold"
+                className="px-4 py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-xs font-semibold border border-neutral-300"
               >
-                Reset Timer
+                I'm Cooked (Reset)
               </button>
             </div>
           </div>
@@ -500,32 +498,32 @@ export const FocusTimerView: React.FC = () => {
       {/* Post-Session Reflection Modal */}
       {showCompletionModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white border border-emerald-300 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl text-center animate-in zoom-in-95">
-            <div className="w-14 h-14 mx-auto rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <Sparkles className="w-7 h-7" />
+          <div className="bg-white border-2 border-black rounded-3xl p-6 max-w-md w-full space-y-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center animate-in zoom-in-95 font-sans">
+            <div className="w-14 h-14 mx-auto rounded-full bg-black text-white flex items-center justify-center text-xl shadow-md">
+              🔥
             </div>
-            <h3 className="text-xl font-display font-bold text-slate-900">Session Cooked! 🔥</h3>
-            <p className="text-xs text-slate-600">
-              You crushed another deep focus block. Did you finish your planned task:
+            <h3 className="text-2xl font-black text-black">Bro Cooked! +5,000 Aura 🗿🔥</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed">
+              Focus block crushed with zero cap. Did you actually finish your target task or was it pure LARP:
             </p>
-            <div className="p-3 rounded-2xl bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700">
-              {data.tasks.find((t) => t.id === selectedTaskId)?.title || 'Linked Task'}
+            <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-300 text-xs font-bold text-black font-mono">
+              {data.tasks.find((t) => t.id === selectedTaskId)?.title || 'Selected Study Task'}
             </div>
             <div className="flex justify-center gap-3 pt-2">
               <button
                 onClick={() => setShowCompletionModal(false)}
-                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200"
+                className="px-4 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 text-xs font-semibold hover:bg-neutral-200 border border-neutral-300"
               >
-                Not quite yet
+                Still Cooking (Not yet)
               </button>
               <button
                 onClick={() => {
                   toggleTaskComplete(selectedTaskId);
                   setShowCompletionModal(false);
                 }}
-                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md"
+                className="px-6 py-2.5 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-md hover:scale-105 active:scale-95 transition-all"
               >
-                Yes, Mark Task Completed! 🎯
+                Task Demolished! 🎯
               </button>
             </div>
           </div>
