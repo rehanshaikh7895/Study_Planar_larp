@@ -32,7 +32,8 @@ export type NavTab =
   | 'exams'
   | 'analytics'
   | 'gamification'
-  | 'settings';
+  | 'settings'
+  | 'login';
 
 export interface ToastMessage {
   id: string;
@@ -84,6 +85,8 @@ interface AppContextType {
   resetAllData: () => void;
   exportJSON: () => void;
   importJSON: (file: File) => Promise<void>;
+  login: (name: string, email?: string) => void;
+  logout: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -567,6 +570,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const login = (name: string, email?: string) => {
+    const cleanName = name.trim() || 'Scholar';
+    setData((prev) => ({
+      ...prev,
+      profile: {
+        ...prev.profile,
+        name: cleanName,
+        email: email?.trim() || `${cleanName.toLowerCase().replace(/\s+/g, '')}@shawtys.edu`,
+        isLoggedIn: true,
+      },
+    }));
+    playSound('start', data.settings.soundEnabled);
+    triggerConfetti('level_up');
+    addToast(`Welcome back, ${cleanName}! Locked in and ready 🔥`, 'success');
+    setActiveTab('dashboard');
+  };
+
+  const logout = () => {
+    setData((prev) => ({
+      ...prev,
+      profile: {
+        ...prev.profile,
+        isLoggedIn: false,
+      },
+    }));
+    playSound('click', data.settings.soundEnabled);
+    addToast('Signed out. Stop LARPing and come back to study!', 'info');
+    setActiveTab('login');
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -606,6 +639,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         resetAllData,
         exportJSON,
         importJSON,
+        login,
+        logout,
       }}
     >
       {children}

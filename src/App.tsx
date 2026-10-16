@@ -12,6 +12,7 @@ import { ExamsView } from './components/exams/ExamsView';
 import { AnalyticsView } from './components/analytics/AnalyticsView';
 import { GamificationView } from './components/gamification/GamificationView';
 import { SettingsView } from './components/settings/SettingsView';
+import { LoginView } from './components/auth/LoginView';
 import { Zap, Shield } from 'lucide-react';
 
 const MainContent: React.FC = () => {
@@ -25,6 +26,8 @@ const MainContent: React.FC = () => {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'landing' && <LandingView />}
+
+        {activeTab === 'login' && <LoginView />}
 
         {activeTab === 'dashboard' && (
           <DashboardView onOpenAddTask={() => setIsAddTaskModalOpen(true)} />

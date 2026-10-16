@@ -125,6 +125,8 @@ export interface Achievement {
 export interface UserProfile {
   name: string;
   avatar: string; // emoji or identifier
+  email?: string;
+  isLoggedIn?: boolean;
   level: number;
   currentXP: number;
   targetXP: number;

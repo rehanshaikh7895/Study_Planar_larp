@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import { playSound } from '../../utils/audio';
 import { triggerConfetti } from '../../utils/confetti';
@@ -18,6 +18,8 @@ import {
   Flame,
   ShieldCheck,
   Star,
+  LogIn,
+  User,
 } from 'lucide-react';
 
 const MASCOT_QUOTES = [
@@ -36,10 +38,14 @@ const MASCOT_QUOTES = [
 ];
 
 export const LandingView: React.FC = () => {
-  const { setActiveTab, loadDemoMode } = useApp();
+  const { setActiveTab, loadDemoMode, data } = useApp();
+  const user = data.profile;
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [mascotQuoteIndex, setMascotQuoteIndex] = useState<number>(0);
   const [clickCount, setClickCount] = useState<number>(0);
+  const [clickCombo, setClickCombo] = useState<number>(0);
+  const lastClickTimeRef = useRef<number>(0);
+  const comboTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const heroRef = useRef<HTMLElement>(null);
   const { scrollY } = useScroll();
@@ -49,6 +55,24 @@ export const LandingView: React.FC = () => {
   const imageScrollScale = useTransform(scrollY, [0, 450], [1.0, 1.25]);
   const smoothImageScale = useSpring(imageScrollScale, { stiffness: 120, damping: 20 });
   const imageScrollOpacity = useTransform(scrollY, [0, 100], [0.9, 1.0]);
+
+  // Dynamic scale for badges/comments behind the mascot (combines scroll & rapid clicks)
+  const badgeScrollScale = useTransform(scrollY, [0, 450], [0.95, 1.2]);
+  const smoothBadgeScrollScale = useSpring(badgeScrollScale, { stiffness: 120, damping: 20 });
+
+  const comboMotion = useMotionValue(1);
+  const smoothComboScale = useSpring(comboMotion, { stiffness: 320, damping: 16 });
+
+  const totalBadgeScale = useTransform(
+    [smoothBadgeScrollScale, smoothComboScale],
+    ([s, c]) => Number(s || 1) * Number(c || 1)
+  );
+
+  useEffect(() => {
+    return () => {
+      if (comboTimerRef.current) clearTimeout(comboTimerRef.current);
+    };
+  }, []);
 
   const textScrollOpacity = useTransform(scrollY, [0, 120], [0.92, 1.0]);
   const textScrollY = useTransform(scrollY, [0, 450], [0, -15]);
@@ -73,10 +97,37 @@ export const LandingView: React.FC = () => {
   };
 
   const handleMascotClick = () => {
+    const now = Date.now();
+    const isRapid = now - lastClickTimeRef.current < 1200;
+    const nextCombo = isRapid ? Math.min(clickCombo + 1, 10) : 1;
+    lastClickTimeRef.current = now;
+    setClickCombo(nextCombo);
+
+    const targetScale = 1 + nextCombo * 0.055;
+    comboMotion.set(targetScale + 0.09);
+    setTimeout(() => {
+      comboMotion.set(targetScale);
+    }, 60);
+
+    if (comboTimerRef.current) clearTimeout(comboTimerRef.current);
+    comboTimerRef.current = setTimeout(() => {
+      setClickCombo(0);
+      comboMotion.set(1);
+    }, 1400);
+
     setMascotQuoteIndex((prev) => (prev + 1) % MASCOT_QUOTES.length);
     setClickCount((c) => c + 1);
-    playSound('badge');
-    triggerConfetti();
+
+    if (nextCombo >= 5) {
+      playSound('level_up', data.settings.soundEnabled);
+      triggerConfetti('level_up');
+    } else if (nextCombo >= 3) {
+      playSound('complete', data.settings.soundEnabled);
+      triggerConfetti('streak');
+    } else {
+      playSound('badge', data.settings.soundEnabled);
+      triggerConfetti('standard');
+    }
   };
 
   const faqs = [
@@ -169,11 +220,11 @@ export const LandingView: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45, duration: 0.6 }}
-              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2"
+              className="flex flex-wrap items-stretch sm:items-center gap-3 pt-2"
             >
               <button
                 onClick={() => setActiveTab('scheduler')}
-                className="flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-black hover:bg-neutral-800 text-white font-sans font-bold text-sm shadow-[0_12px_28px_-6px_rgba(0,0,0,0.35)] transition-all duration-200 hover:scale-105 active:scale-95 group"
+                className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-black hover:bg-neutral-800 text-white font-sans font-bold text-sm shadow-[0_12px_28px_-6px_rgba(0,0,0,0.35)] transition-all duration-200 hover:scale-105 active:scale-95 group"
               >
                 <Sparkles className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
                 <span>Build My Study Plan</span>
@@ -181,18 +232,35 @@ export const LandingView: React.FC = () => {
 
               <button
                 onClick={() => setActiveTab('dashboard')}
-                className="flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-white hover:bg-neutral-50 text-black border-2 border-black font-sans font-bold text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:scale-105 active:scale-95"
+                className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white hover:bg-neutral-50 text-black border-2 border-black font-sans font-bold text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:scale-105 active:scale-95"
               >
                 <span>Command Center</span>
                 <ArrowRight className="w-4 h-4 text-black" />
               </button>
 
               <button
+                onClick={() => setActiveTab('login')}
+                className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-neutral-900 hover:bg-black text-white font-sans font-bold text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95"
+              >
+                {user?.isLoggedIn ? (
+                  <>
+                    <User className="w-4 h-4 text-emerald-400" />
+                    <span>{user.name.split(' ')[0]}</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-4 h-4 text-white" />
+                    <span>Sign In</span>
+                  </>
+                )}
+              </button>
+
+              <button
                 onClick={loadDemoMode}
-                className="flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-300 font-mono font-semibold text-xs transition-all hover:scale-105"
+                className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-300 font-mono font-semibold text-xs transition-all hover:scale-105"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Load Demo Data</span>
+                <span>Demo</span>
               </button>
             </motion.div>
 
@@ -214,19 +282,61 @@ export const LandingView: React.FC = () => {
           <div
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="lg:col-span-5 relative flex flex-col items-center justify-center perspective-[1000px]"
+            className="lg:col-span-5 relative flex flex-col items-center justify-center perspective-[1000px] select-none"
           >
             {/* Subtle monochrome ambient backdrop ring */}
             <div className="absolute inset-0 bg-neutral-900/5 rounded-full blur-3xl -z-10 scale-95" />
 
-            {/* Custom Matte Obsidian Speech Capsule (NOT AI-looking, authentic SF Pro Display font) */}
+            {/* Rapid Click Combo Pill (Floats at z-30 over everything when user clicks continuously) */}
+            <AnimatePresence>
+              {clickCombo >= 2 && (
+                <motion.div
+                  initial={{ scale: 0, y: -20, opacity: 0 }}
+                  animate={{ scale: 1, y: 0, opacity: 1 }}
+                  exit={{ scale: 0, y: -20, opacity: 0 }}
+                  className="absolute -top-6 sm:-top-8 left-1/2 -translate-x-1/2 z-30 bg-black text-white px-4 py-1.5 rounded-full border-2 border-white shadow-[0_10px_25px_rgba(0,0,0,0.4)] flex items-center gap-2 font-mono text-xs font-black tracking-wider whitespace-nowrap pointer-events-none"
+                >
+                  <Flame className="w-4 h-4 text-amber-400 fill-amber-400 animate-spin" />
+                  <span>🔥 {clickCombo}X SCOLD COMBO! INTENSITY {Math.round(100 + clickCombo * 25)}%</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Sarcastic Satire Sticker (Top Left) - BEHIND (z-10) */}
+            <motion.div
+              style={{ scale: totalBadgeScale }}
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+              whileHover={{ scale: 1.1, rotate: 0 }}
+              onClick={handleMascotClick}
+              className="absolute -top-4 -left-4 sm:top-2 sm:-left-8 z-10 bg-black text-white px-3 py-2 rounded-xl border border-neutral-700 shadow-md flex items-center gap-2 cursor-pointer font-sans font-black text-xs uppercase"
+            >
+              <span>💀</span>
+              <span>BRO IS COOKED FR</span>
+            </motion.div>
+
+            {/* Sarcastic Satire Sticker (Top Right) - BEHIND (z-10) */}
+            <motion.div
+              style={{ scale: totalBadgeScale }}
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+              whileHover={{ scale: 1.1, rotate: 0 }}
+              onClick={handleMascotClick}
+              className="absolute top-2 -right-4 sm:top-4 sm:-right-8 z-10 bg-white text-black px-3 py-2 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center gap-2 cursor-pointer font-sans font-black text-xs uppercase"
+            >
+              <span>⚡</span>
+              <span>AURA +5,000</span>
+            </motion.div>
+
+            {/* Custom Matte Obsidian Speech Capsule - BEHIND (z-10) */}
             <motion.div
               key={mascotQuoteIndex}
-              initial={{ scale: 0.94, opacity: 0, y: 10 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
+              style={{ scale: totalBadgeScale }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               onClick={handleMascotClick}
               whileTap={{ scale: 0.96 }}
-              className="relative z-20 mb-4 bg-[#0A0A0A] text-white p-4 sm:p-4.5 rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.35)] border border-neutral-700/80 max-w-sm cursor-pointer hover:border-neutral-500 hover:shadow-[0_24px_48px_-10px_rgba(0,0,0,0.45)] transition-all group"
+              className="relative z-10 mb-4 bg-[#0A0A0A] text-white p-4 sm:p-4.5 rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.35)] border border-neutral-700/80 max-w-sm cursor-pointer hover:border-neutral-500 hover:shadow-[0_24px_48px_-10px_rgba(0,0,0,0.45)] transition-all group"
               title="Click mentor for advice + confetti!"
             >
               {/* Top Meta Bar */}
@@ -265,23 +375,20 @@ export const LandingView: React.FC = () => {
                 transformPerspective: 1000,
               }}
               onClick={handleMascotClick}
-              whileTap={{ scale: 0.96 }}
-              className="relative z-10 w-full max-w-[340px] sm:max-w-[380px] cursor-pointer group"
+              whileTap={{ scale: 0.94 }}
+              className="relative w-full max-w-[340px] sm:max-w-[380px] cursor-pointer group"
               title="Click mentor for motivation + confetti!"
             >
-              {/* Mascot Cutout Image without background */}
-              <img
-                src="/padhlo-mascot.png"
-                alt="PadhloShawtys Mentor"
-                className="w-full h-auto drop-shadow-[0_25px_35px_rgba(0,0,0,0.18)] group-hover:drop-shadow-[0_30px_45px_rgba(0,0,0,0.28)] transition-all duration-300 select-none pointer-events-auto"
-                draggable={false}
-              />
+              {/* ============================================================== */}
+              {/* Floating Badges BEHIND the Mascot Cutout (z-10)               */}
+              {/* ============================================================== */}
 
-              {/* Floating Badge 1: Stark Black Card */}
+              {/* Floating Badge 1: Stark Black Card - BEHIND (z-10) */}
               <motion.div
+                style={{ scale: totalBadgeScale }}
                 animate={{ y: [0, -6, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute bottom-4 -left-3 bg-black text-white p-3 sm:p-3.5 rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.3)] border border-neutral-800 flex items-center gap-3 text-xs hover:scale-105 transition-transform"
+                className="absolute bottom-4 -left-4 z-10 bg-black text-white p-3 sm:p-3.5 rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.3)] border border-neutral-800 flex items-center gap-3 text-xs hover:scale-105 transition-transform"
               >
                 <div className="w-8 h-8 rounded-xl bg-neutral-900 text-amber-400 flex items-center justify-center font-bold border border-neutral-800">
                   <Flame className="w-4.5 h-4.5 fill-amber-400" />
@@ -292,11 +399,12 @@ export const LandingView: React.FC = () => {
                 </div>
               </motion.div>
 
-              {/* Floating Badge 2: Crisp White Card with 2px Black Border (Neo-minimalist) */}
+              {/* Floating Badge 2: Crisp White Card with 2px Black Border - BEHIND (z-10) */}
               <motion.div
+                style={{ scale: totalBadgeScale }}
                 animate={{ y: [0, 6, 0] }}
                 transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute top-20 -right-3 bg-white text-black p-3 sm:p-3.5 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black flex items-center gap-3 text-xs hover:scale-105 transition-transform"
+                className="absolute top-20 -right-4 z-10 bg-white text-black p-3 sm:p-3.5 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black flex items-center gap-3 text-xs hover:scale-105 transition-transform"
               >
                 <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center font-bold font-mono">
                   ⚡
@@ -307,8 +415,18 @@ export const LandingView: React.FC = () => {
                 </div>
               </motion.div>
 
-              {/* Interactive Click Tip Pill */}
-              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white text-black border-2 border-black text-[10px] px-3.5 py-1 rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-mono whitespace-nowrap flex items-center gap-1.5 font-bold">
+              {/* ============================================================== */}
+              {/* Mascot Cutout Image without background - IN FRONT AT z-20     */}
+              {/* ============================================================== */}
+              <img
+                src="/padhlo-mascot.png"
+                alt="PadhloShawtys Mentor"
+                className="relative z-20 w-full h-auto drop-shadow-[0_25px_35px_rgba(0,0,0,0.18)] group-hover:drop-shadow-[0_30px_45px_rgba(0,0,0,0.28)] transition-all duration-300 select-none pointer-events-auto"
+                draggable={false}
+              />
+
+              {/* Interactive Click Tip Pill - IN FRONT AT z-25 */}
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-25 bg-white text-black border-2 border-black text-[10px] px-3.5 py-1 rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-mono whitespace-nowrap flex items-center gap-1.5 font-bold">
                 <Sparkles className="w-3 h-3 text-black animate-spin" />
                 <span>TAP MENTOR ({clickCount > 0 ? `${clickCount}x clicked` : 'ADVICE & CONFETTI'})</span>
               </div>
@@ -564,8 +682,15 @@ export const LandingView: React.FC = () => {
             <Zap className="w-4 h-4 text-black fill-black" />
           </button>
           <button
+            onClick={() => setActiveTab('login')}
+            className="px-6 py-4 rounded-2xl bg-neutral-900 text-white border border-neutral-700 font-sans font-bold text-sm hover:bg-neutral-800 transition-all hover:scale-105 flex items-center gap-2"
+          >
+            <LogIn className="w-4 h-4 text-white" />
+            <span>{user?.isLoggedIn ? 'Manage Account' : 'Sign In / Login'}</span>
+          </button>
+          <button
             onClick={loadDemoMode}
-            className="px-6 py-4 rounded-2xl bg-neutral-900 text-white border border-neutral-700 font-mono font-semibold text-xs hover:bg-neutral-800 transition-all hover:scale-105"
+            className="px-6 py-4 rounded-2xl bg-neutral-900 text-neutral-300 border border-neutral-800 font-mono font-semibold text-xs hover:bg-neutral-800 transition-all hover:scale-105"
           >
             Load Demo Data
           </button>

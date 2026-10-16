@@ -19,6 +19,8 @@ import {
   Flame,
   Sparkles,
   BookOpen,
+  User,
+  LogOut,
 } from 'lucide-react';
 
 interface NavItem {
@@ -29,7 +31,7 @@ interface NavItem {
 }
 
 export const Navbar: React.FC = () => {
-  const { data, activeTab, setActiveTab, toggleSound, toggleTheme, loadDemoMode } = useApp();
+  const { data, activeTab, setActiveTab, toggleSound, toggleTheme, loadDemoMode, logout } = useApp();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -56,6 +58,9 @@ export const Navbar: React.FC = () => {
     { id: 'analytics', label: 'Comeback Analytics', icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'gamification', label: 'Quests & XP', icon: <Trophy className="w-4 h-4" /> },
     { id: 'settings', label: 'Settings', icon: <Settings className="w-4 h-4" /> },
+    ...(!data.profile.isLoggedIn
+      ? [{ id: 'login' as NavTab, label: 'Sign In', icon: <User className="w-4 h-4" /> }]
+      : []),
   ];
 
   const handleNavClick = (tab: NavTab) => {
@@ -139,6 +144,34 @@ export const Navbar: React.FC = () => {
               <Sparkles className="w-3.5 h-3.5 text-black dark:text-white" />
               <span>Load Demo</span>
             </button>
+
+            {data.profile.isLoggedIn ? (
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => handleNavClick('dashboard')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-xs font-bold transition-all font-sans cursor-pointer"
+                  title="Logged in scholar"
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span className="text-black dark:text-white font-mono">{data.profile.name}</span>
+                </button>
+                <button
+                  onClick={logout}
+                  className="p-1.5 rounded-xl text-neutral-500 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => handleNavClick('login')}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-xl bg-white text-black border-2 border-black hover:bg-neutral-100 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 hover:scale-105 active:scale-95 font-sans cursor-pointer"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </button>
+            )}
 
             <button
               onClick={() => handleNavClick('focus')}
