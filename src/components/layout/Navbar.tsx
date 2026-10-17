@@ -95,11 +95,11 @@ export const Navbar: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-sans font-black text-xl tracking-tight text-black dark:text-white flex items-center gap-1">
-                  Padhlo<span className="bg-black text-white dark:bg-white dark:text-black px-1.5 py-0.5 rounded-md text-sm font-bold">Shawtys</span>
-                </span>
-                <span className="text-[10px] uppercase font-mono tracking-widest px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 font-bold">
-                  OS v2.0
+                <span className="font-sans font-black text-lg tracking-tight text-black dark:text-white flex items-baseline gap-1">
+                  <span className="font-extrabold text-neutral-700 dark:text-neutral-300">Padhlo</span>
+                  <span className="bg-black text-white dark:bg-white dark:text-black px-2 py-0.5 rounded-lg text-sm font-black tracking-tight uppercase italic">
+                    SHAWTYS
+                  </span>
                 </span>
               </div>
               <p className="text-[11px] text-neutral-500 font-mono tracking-tight hidden sm:block">

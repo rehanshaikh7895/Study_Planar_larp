@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform, useScroll } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import { playSound } from '../../utils/audio';
-import { triggerConfetti } from '../../utils/confetti';
+import { triggerEmojiBurst } from '../../utils/emojiPop';
 import {
   Zap,
   ArrowRight,
@@ -85,7 +85,7 @@ export const LoginView: React.FC = () => {
     mouseY.set(0);
   };
 
-  const handleMascotClick = () => {
+  const handleMascotClick = (e?: React.MouseEvent) => {
     const now = Date.now();
     const isRapid = now - lastClickTimeRef.current < 1200;
     const nextCombo = isRapid ? Math.min(clickCombo + 1, 12) : 1;
@@ -109,16 +109,16 @@ export const LoginView: React.FC = () => {
     setCurrentSatireIdx((prev) => (prev + 1) % SATIRE_QUOTES.length);
     setScoldCount((c) => c + 1);
 
-    // Intensity scaling for sound and confetti
+    // Burst Apple Fire and Meme emojis from the click location!
+    const intensity = nextCombo >= 5 ? 'frenzy' : nextCombo >= 3 ? 'streak' : 'normal';
+    triggerEmojiBurst(e ? { x: e.clientX, y: e.clientY, intensity } : { intensity });
+
     if (nextCombo >= 5) {
       playSound('level_up', data.settings.soundEnabled);
-      triggerConfetti('level_up');
     } else if (nextCombo >= 3) {
       playSound('complete', data.settings.soundEnabled);
-      triggerConfetti('streak');
     } else {
       playSound('badge', data.settings.soundEnabled);
-      triggerConfetti('standard');
     }
   };
 
@@ -126,7 +126,7 @@ export const LoginView: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     playSound('start', data.settings.soundEnabled);
-    triggerConfetti('level_up');
+    triggerEmojiBurst({ intensity: 'frenzy' });
 
     setTimeout(() => {
       login(name || 'Scholar', email);
@@ -136,7 +136,7 @@ export const LoginView: React.FC = () => {
   const handleQuickDemoLogin = () => {
     setIsSubmitting(true);
     playSound('start', data.settings.soundEnabled);
-    triggerConfetti('level_up');
+    triggerEmojiBurst({ intensity: 'frenzy' });
     setTimeout(() => {
       login('Rehan Scholar', 'rehan@shawtys.edu');
     }, 350);
@@ -159,19 +159,6 @@ export const LoginView: React.FC = () => {
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Home</span>
         </motion.button>
-
-        {/* Status Pill */}
-        <motion.div
-          initial={{ opacity: 0, x: 15 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black text-white text-[11px] font-mono font-medium shadow-md border border-neutral-800"
-        >
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span className="font-bold tracking-tight">AUTH_GATEWAY // LOCK IN</span>
-        </motion.div>
       </div>
 
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -184,29 +171,24 @@ export const LoginView: React.FC = () => {
         >
           {/* Main Title matching Home Page */}
           <div className="space-y-3">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-neutral-100 text-black border border-neutral-300 text-xs font-mono font-bold tracking-wider uppercase"
-            >
-              <Zap className="w-3.5 h-3.5 fill-black" />
-              <span>Academic Weapon Access Portal</span>
-            </motion.div>
-
             <motion.h1
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-4xl sm:text-5xl lg:text-[54px] font-sans font-black tracking-tight text-black leading-[1.08]"
+              transition={{ delay: 0.15 }}
+              className="text-4xl sm:text-5xl lg:text-[58px] font-sans font-black tracking-tight text-black leading-[1.12]"
             >
               Kyu nhi hori padhai? <br />
-              <span className="relative inline-block mt-2">
-                <span className="text-neutral-900 font-extrabold">kyuki aap </span>
-                <span className="bg-black text-white px-3.5 py-1 rounded-2xl inline-block -rotate-1 shadow-md">
-                  Login
+              <span className="inline-flex flex-wrap items-baseline gap-2.5 mt-2">
+                <span className="text-neutral-900 font-extrabold">kyuki aap</span>
+                <span className="inline-flex items-baseline gap-2 px-4 py-1.5 rounded-2xl bg-black text-white shadow-xl -rotate-1 hover:rotate-0 transition-transform">
+                  <span className="font-extrabold text-2xl sm:text-3xl lg:text-4xl tracking-tight text-neutral-300">
+                    Padhlo
+                  </span>
+                  <span className="font-black text-3xl sm:text-5xl lg:text-[56px] tracking-tighter text-white uppercase italic">
+                    SHAWTYS
+                  </span>
                 </span>
-                <span className="text-neutral-900 font-extrabold"> nhi karte! 😭🔥</span>
+                <span className="text-neutral-900 font-extrabold">pe Login nhi karte! 😭🔥</span>
               </span>
             </motion.h1>
 

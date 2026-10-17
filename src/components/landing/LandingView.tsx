@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import { playSound } from '../../utils/audio';
-import { triggerConfetti } from '../../utils/confetti';
+import { triggerEmojiBurst } from '../../utils/emojiPop';
 import {
   Zap,
   Sparkles,
@@ -96,7 +96,7 @@ export const LandingView: React.FC = () => {
     mouseY.set(0);
   };
 
-  const handleMascotClick = () => {
+  const handleMascotClick = (e?: React.MouseEvent) => {
     const now = Date.now();
     const isRapid = now - lastClickTimeRef.current < 1200;
     const nextCombo = isRapid ? Math.min(clickCombo + 1, 10) : 1;
@@ -118,15 +118,16 @@ export const LandingView: React.FC = () => {
     setMascotQuoteIndex((prev) => (prev + 1) % MASCOT_QUOTES.length);
     setClickCount((c) => c + 1);
 
+    // Burst Apple Fire and Meme emojis from the click location!
+    const intensity = nextCombo >= 5 ? 'frenzy' : nextCombo >= 3 ? 'streak' : 'normal';
+    triggerEmojiBurst(e ? { x: e.clientX, y: e.clientY, intensity } : { intensity });
+
     if (nextCombo >= 5) {
       playSound('level_up', data.settings.soundEnabled);
-      triggerConfetti('level_up');
     } else if (nextCombo >= 3) {
       playSound('complete', data.settings.soundEnabled);
-      triggerConfetti('streak');
     } else {
       playSound('badge', data.settings.soundEnabled);
-      triggerConfetti('standard');
     }
   };
 
@@ -169,36 +170,25 @@ export const LandingView: React.FC = () => {
             style={{ opacity: textScrollOpacity, y: textScrollY }}
             className="lg:col-span-7 space-y-6 text-left"
           >
-            {/* Sleek Monochrome Pill Badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black text-white text-[11px] font-sans font-medium tracking-tight shadow-md border border-neutral-800 hover:scale-105 transition-transform cursor-default"
-            >
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-              </span>
-              <span className="font-bold tracking-tight text-white">PadhloShawtys OS</span>
-              <span className="text-neutral-500 font-mono text-[10px]">/</span>
-              <span className="text-neutral-300 font-mono text-[10px] tracking-wider uppercase font-semibold">v2.0</span>
-            </motion.div>
-
             {/* The Main Title requested by User: Crisp Black-and-White Streetwear / Editorial typography */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-4xl sm:text-5xl lg:text-[62px] font-sans font-black tracking-tight text-black leading-[1.08]"
+              transition={{ delay: 0.15, duration: 0.8 }}
+              className="text-4xl sm:text-5xl lg:text-[64px] font-sans font-black tracking-tight text-black leading-[1.12]"
             >
               Kyu nhi hori padhai? <br />
-              <span className="relative inline-block mt-2">
-                <span className="text-neutral-900 font-extrabold">kyuki aap </span>
-                <span className="bg-black text-white px-3.5 py-1 rounded-2xl inline-block -rotate-1 shadow-md hover:rotate-0 transition-transform">
-                  PadhloShawtys
+              <span className="inline-flex flex-wrap items-baseline gap-2.5 mt-2">
+                <span className="text-neutral-900 font-extrabold">kyuki aap</span>
+                <span className="inline-flex items-baseline gap-2 px-4 py-1.5 rounded-2xl bg-black text-white shadow-[0_12px_28px_-6px_rgba(0,0,0,0.35)] -rotate-1 hover:rotate-0 transition-transform">
+                  <span className="font-extrabold text-2xl sm:text-3xl lg:text-[40px] tracking-tight text-neutral-300">
+                    Padhlo
+                  </span>
+                  <span className="font-black text-3xl sm:text-5xl lg:text-[62px] tracking-tighter text-white uppercase italic">
+                    SHAWTYS
+                  </span>
                 </span>
-                <span className="text-neutral-900 font-extrabold"> nhi use karte! 😭🔥</span>
+                <span className="text-neutral-900 font-extrabold">nhi use karte! 😭🔥</span>
               </span>
             </motion.h1>
 
