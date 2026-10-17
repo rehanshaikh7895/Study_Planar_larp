@@ -2,14 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import type { NavTab } from '../../context/AppContext';
 import {
-  LayoutDashboard,
   CalendarCheck,
-  CheckSquare,
   Timer,
   GraduationCap,
   TrendingUp,
-  Trophy,
-  Settings,
   Volume2,
   VolumeX,
   Sun,
@@ -45,19 +41,10 @@ export const Navbar: React.FC = () => {
 
   const navItems: NavItem[] = [
     { id: 'landing', label: 'Home', icon: <BookOpen className="w-4 h-4" /> },
-    { id: 'dashboard', label: 'Command Center', icon: <LayoutDashboard className="w-4 h-4" /> },
-    { id: 'scheduler', label: 'Smart Scheduler', icon: <CalendarCheck className="w-4 h-4" /> },
-    {
-      id: 'tasks',
-      label: 'Tasks',
-      icon: <CheckSquare className="w-4 h-4" />,
-      badge: `${data.tasks.filter((t) => t.status !== 'completed').length}`,
-    },
-    { id: 'focus', label: 'Lock In', icon: <Timer className="w-4 h-4" /> },
-    { id: 'exams', label: 'Exams & Syllabus', icon: <GraduationCap className="w-4 h-4" /> },
-    { id: 'analytics', label: 'Comeback Analytics', icon: <TrendingUp className="w-4 h-4" /> },
-    { id: 'gamification', label: 'Quests & XP', icon: <Trophy className="w-4 h-4" /> },
-    { id: 'settings', label: 'Settings', icon: <Settings className="w-4 h-4" /> },
+    { id: 'exams', label: '1. Subjects & Exams', icon: <GraduationCap className="w-4 h-4" /> },
+    { id: 'scheduler', label: '2. Smart Schedule', icon: <CalendarCheck className="w-4 h-4" /> },
+    { id: 'focus', label: '3. Track & Focus', icon: <Timer className="w-4 h-4" /> },
+    { id: 'analytics', label: '4. Progress', icon: <TrendingUp className="w-4 h-4" /> },
     ...(!data.profile.isLoggedIn
       ? [{ id: 'login' as NavTab, label: 'Sign In', icon: <User className="w-4 h-4" /> }]
       : []),
@@ -83,7 +70,7 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between gap-4">
           {/* Logo & Tagline */}
           <div
-            onClick={() => handleNavClick('dashboard')}
+            onClick={() => handleNavClick('landing')}
             className="flex items-center gap-3 cursor-pointer group shrink-0"
           >
             <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] overflow-hidden group-hover:scale-105 transition-transform duration-200">

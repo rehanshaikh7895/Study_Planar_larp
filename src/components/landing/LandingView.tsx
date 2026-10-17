@@ -6,11 +6,9 @@ import { triggerEmojiBurst } from '../../utils/emojiPop';
 import {
   Zap,
   Sparkles,
-  CalendarCheck,
   Timer,
   GraduationCap,
   TrendingUp,
-  Trophy,
   ArrowRight,
   ChevronDown,
   ChevronUp,
@@ -213,19 +211,19 @@ export const LandingView: React.FC = () => {
               className="flex flex-wrap items-stretch sm:items-center gap-3 pt-2"
             >
               <button
-                onClick={() => setActiveTab('scheduler')}
+                onClick={() => setActiveTab('exams')}
                 className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-black hover:bg-neutral-800 text-white font-sans font-bold text-sm shadow-[0_12px_28px_-6px_rgba(0,0,0,0.35)] transition-all duration-200 hover:scale-105 active:scale-95 group"
               >
-                <Sparkles className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
-                <span>Build My Study Plan</span>
+                <GraduationCap className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
+                <span>1. Enter Subjects & Exams</span>
               </button>
 
               <button
-                onClick={() => setActiveTab('dashboard')}
+                onClick={() => setActiveTab('scheduler')}
                 className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white hover:bg-neutral-50 text-black border-2 border-black font-sans font-bold text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:scale-105 active:scale-95"
               >
-                <span>Command Center</span>
-                <ArrowRight className="w-4 h-4 text-black" />
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <span>2. Auto-Create Schedule</span>
               </button>
 
               <button
@@ -425,116 +423,132 @@ export const LandingView: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. Interactive Feature Bento Grid (Sleek Monochrome Luxury Architecture) */}
+      {/* 2. The 4 Main Focus Areas (Clean, Simple, 0 Clutter) */}
       <section className="space-y-8">
-        <div className="text-center space-y-2">
-          <span className="text-xs font-mono font-bold uppercase tracking-widest text-black bg-neutral-100 px-3.5 py-1.5 rounded-full border border-neutral-300">
-            Designfull Academic Architecture
-          </span>
+        <div className="text-center space-y-3 max-w-2xl mx-auto">
           <h2 className="text-3xl sm:text-5xl font-sans font-black tracking-tight text-black">
-            Why PadhloShawtys Hits Different
+            Only 4 Steps. Zero Fluff.
           </h2>
-          <p className="text-sm text-neutral-600 max-w-lg mx-auto font-sans">
-            Not another boring planner. Built with monochrome aesthetic precision, genuine algorithms, and
-            gamification that keeps you locked in.
+          <p className="text-sm sm:text-base text-neutral-600 font-sans">
+            PadhloShawtys strips away the productivity BS. Just enter your subjects, generate your plan,
+            lock in on topics, and watch your comeback arc unfold.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Card 1 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform">
-              <CalendarCheck className="w-6 h-6 text-white" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Focus 1: Subjects & Exam Dates */}
+          <div
+            onClick={() => setActiveTab('exams')}
+            className="p-6 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between group"
+          >
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-black tracking-widest text-neutral-400 uppercase">
+                  STEP 01
+                </span>
+                <div className="w-10 h-10 rounded-2xl bg-black text-white flex items-center justify-center group-hover:rotate-6 transition-transform">
+                  <GraduationCap className="w-5 h-5 text-white" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-sans font-black text-black tracking-tight">
+                  1. Enter Subjects & Exams
+                </h3>
+                <p className="text-xs text-neutral-600 mt-2 leading-relaxed">
+                  Add your courses, syllabus chapters, and upcoming exam dates with real-time countdown tickers.
+                </p>
+              </div>
             </div>
-            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">Smart Study Scheduler</h3>
-            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
-              Transparent deterministic algorithm distributes your entire exam syllabus and task
-              agenda across available days. It inserts rest intervals and avoids lectures or gym
-              slots.
-            </p>
-            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-              <span>Urgency + Difficulty + Confidence Formula</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </div>
-          </div>
-
-          {/* Card 2 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-2 transition-transform">
-              <Timer className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">“Lock In” Pomodoro Timer</h3>
-            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
-              Drift-proof circular countdown that never freezes in background tabs. Includes
-              synthesized Web Audio chimes, task linking, and post-session reflection modals.
-            </p>
-            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-              <span>25m Focus / 5m Chill / Audio Synth</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+            <div className="pt-6 flex items-center gap-1.5 text-xs font-bold text-black font-sans group-hover:translate-x-1 transition-transform">
+              <span>Add Exam Dates</span>
+              <ArrowRight className="w-4 h-4" />
             </div>
           </div>
 
-          {/* Card 3 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform">
-              <GraduationCap className="w-6 h-6 text-white" />
+          {/* Focus 2: Smart Schedule */}
+          <div
+            onClick={() => setActiveTab('scheduler')}
+            className="p-6 rounded-3xl bg-black text-white border-2 border-neutral-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between group"
+          >
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-black tracking-widest text-neutral-400 uppercase">
+                  STEP 02
+                </span>
+                <div className="w-10 h-10 rounded-2xl bg-neutral-900 text-amber-400 flex items-center justify-center border border-neutral-700 group-hover:rotate-6 transition-transform">
+                  <Sparkles className="w-5 h-5 text-amber-400" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-sans font-black text-white tracking-tight">
+                  2. Auto-Create Schedule
+                </h3>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  One tap generates a balanced revision timetable distributed across your available days leading to the exam.
+                </p>
+              </div>
             </div>
-            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">Exam Countdown & Syllabus</h3>
-            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
-              Real-time countdown to exam day down to the second. Matrix tracks topics with
-              confidence ratings so you never waste hours reviewing chapters you already know.
-            </p>
-            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-              <span>Confidence Matrix & Real-time Tickers</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </div>
-          </div>
-
-          {/* Card 4 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-2 transition-transform">
-              <TrendingUp className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">The Academic Comeback</h3>
-            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
-              Interactive Recharts charts: daily focus minutes, planned vs. actual execution, and
-              subject distribution. Generates genuine insights based on verified study logs.
-            </p>
-            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-              <span>Zero Fake Stats • 100% Real Calculations</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+            <div className="pt-6 flex items-center gap-1.5 text-xs font-bold text-white font-sans group-hover:translate-x-1 transition-transform">
+              <span>Generate Timetable</span>
+              <ArrowRight className="w-4 h-4 text-amber-400" />
             </div>
           </div>
 
-          {/* Card 5 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform">
-              <Trophy className="w-6 h-6 text-white" />
+          {/* Focus 3: Track Topics & Lock In Timer */}
+          <div
+            onClick={() => setActiveTab('focus')}
+            className="p-6 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between group"
+          >
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-black tracking-widest text-neutral-400 uppercase">
+                  STEP 03
+                </span>
+                <div className="w-10 h-10 rounded-2xl bg-black text-white flex items-center justify-center group-hover:rotate-6 transition-transform">
+                  <Timer className="w-5 h-5 text-white" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-sans font-black text-black tracking-tight">
+                  3. Track & Focus Sprint
+                </h3>
+                <p className="text-xs text-neutral-600 mt-2 leading-relaxed">
+                  Check off completed topics on your syllabus matrix and lock in with the drift-proof 25-minute Pomodoro timer.
+                </p>
+              </div>
             </div>
-            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">Gamification (Not Cringe)</h3>
-            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
-              Earn XP for studying, level up from Procrastination Rookie to Academic Weapon, finish
-              daily quests, unlock badges, and get your Spotify Wrapped-style Sunday recap!
-            </p>
-            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-              <span>Levels 1-10 + Weekly Wrapped Recap</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+            <div className="pt-6 flex items-center gap-1.5 text-xs font-bold text-black font-sans group-hover:translate-x-1 transition-transform">
+              <span>Start Focus Sprint</span>
+              <ArrowRight className="w-4 h-4" />
             </div>
           </div>
 
-          {/* Card 6 */}
-          <div className="design-card p-7 rounded-3xl space-y-4 group hover:border-black transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-2 transition-transform">
-              <ShieldCheck className="w-6 h-6 text-white" />
+          {/* Focus 4: Progress & Streak */}
+          <div
+            onClick={() => setActiveTab('analytics')}
+            className="p-6 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between group"
+          >
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-black tracking-widest text-neutral-400 uppercase">
+                  STEP 04
+                </span>
+                <div className="w-10 h-10 rounded-2xl bg-black text-white flex items-center justify-center group-hover:rotate-6 transition-transform">
+                  <TrendingUp className="w-5 h-5 text-white" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-sans font-black text-black tracking-tight">
+                  4. Track Real Progress
+                </h3>
+                <p className="text-xs text-neutral-600 mt-2 leading-relaxed">
+                  Real syllabus progress percentages per subject, study streak counter, and verified comeback metrics.
+                </p>
+              </div>
             </div>
-            <h3 className="text-lg font-sans font-extrabold text-black tracking-tight">Local Privacy & JSON Backup</h3>
-            <p className="text-xs text-neutral-600 leading-relaxed font-sans">
-              No account required. All data survives refreshes in browser localStorage. Export your
-              entire backup as a JSON file or restore it anytime with one click.
-            </p>
-            <div className="pt-2 text-[11px] font-mono font-bold text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-              <span>100% Client-Side Privacy Guaranteed</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+            <div className="pt-6 flex items-center gap-1.5 text-xs font-bold text-black font-sans group-hover:translate-x-1 transition-transform">
+              <span>View Progress</span>
+              <ArrowRight className="w-4 h-4" />
             </div>
           </div>
         </div>

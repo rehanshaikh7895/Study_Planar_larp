@@ -64,51 +64,51 @@ const MainContent: React.FC = () => {
       )}
 
       {/* Footer */}
-      <footer className="mt-16 border-t border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#06070B] py-10 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <footer className="mt-16 border-t border-neutral-200 bg-white py-10 transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+            <div className="w-6 h-6 rounded-lg bg-black flex items-center justify-center text-white">
               <Zap className="w-3.5 h-3.5 fill-white" />
             </div>
-            <span className="font-display font-bold text-slate-800 dark:text-slate-200">
-              PADHLO<span className="text-indigo-600">SHAWTYS</span>
+            <span className="font-sans font-black tracking-tight text-black text-sm">
+              PADHLO <span className="text-black underline decoration-2 underline-offset-4">SHAWTYS</span>
             </span>
             <span>•</span>
-            <span className="font-medium text-slate-600 dark:text-slate-400">
+            <span className="font-medium text-neutral-500">
               Kyu nhi hori padhai? PadhloShawtys pe lock in karo! 🔥
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 text-slate-500">
+          <div className="flex flex-wrap items-center gap-4 text-neutral-600 font-bold">
             <button
-              onClick={() => setActiveTab('dashboard')}
-              className="hover:text-indigo-600 transition-colors"
+              onClick={() => setActiveTab('exams')}
+              className="hover:text-black transition-colors"
             >
-              Command Center
+              1. Subjects & Exams
             </button>
             <button
               onClick={() => setActiveTab('scheduler')}
-              className="hover:text-cyan-600 transition-colors"
+              className="hover:text-black transition-colors"
             >
-              Scheduler
+              2. Smart Schedule
             </button>
             <button
               onClick={() => setActiveTab('focus')}
-              className="hover:text-pink-600 transition-colors"
+              className="hover:text-black transition-colors"
             >
-              Focus Mode
+              3. Track & Focus
             </button>
             <button
               onClick={() => setActiveTab('analytics')}
-              className="hover:text-emerald-600 transition-colors"
+              className="hover:text-black transition-colors"
             >
-              Analytics
+              4. Progress & Streaks
             </button>
             <button
               onClick={loadDemoMode}
-              className="text-indigo-600 font-semibold hover:underline"
+              className="text-black underline hover:text-neutral-700 font-bold"
             >
-              Load Demo Mode
+              Reset / Demo Data
             </button>
           </div>
 

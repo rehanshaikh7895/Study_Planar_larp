@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import type { ScheduledSession } from '../../types';
+import { triggerEmojiBurst } from '../../utils/emojiPop';
 import {
   Sparkles,
   Clock,
@@ -11,9 +12,10 @@ import {
   Sliders,
   AlertTriangle,
   RotateCcw,
-  ChevronRight,
   Info,
   Layers,
+  ArrowRight,
+  Flame,
 } from 'lucide-react';
 
 export const SchedulerView: React.FC = () => {
@@ -22,19 +24,16 @@ export const SchedulerView: React.FC = () => {
     runScheduler,
     toggleLockSession,
     updateSessionStatus,
-    moveSession,
     deleteSession,
     clearSchedule,
     updatePreferences,
+    setActiveTab,
   } = useApp();
 
   const [selectedDayFilter, setSelectedDayFilter] = useState<string>('all');
   const [warnings, setWarnings] = useState<string[]>([]);
   const [selectedSessionForInfo, setSelectedSessionForInfo] = useState<ScheduledSession | null>(null);
   const [isEditingPreferences, setIsEditingPreferences] = useState(false);
-  const [reschedulingSessionId, setReschedulingSessionId] = useState<string | null>(null);
-  const [rescheduleDate, setRescheduleDate] = useState('');
-  const [rescheduleTime, setRescheduleTime] = useState('');
 
   const [dailyTargetInput, setDailyTargetInput] = useState(
     data.schedulerPreferences.dailyStudyTargetMinutes
@@ -49,9 +48,10 @@ export const SchedulerView: React.FC = () => {
     data.schedulerPreferences.defaultSessionDuration
   );
 
-  const handleGenerate = () => {
+  const handleGenerate = (e?: React.MouseEvent) => {
     const warns = runScheduler(7);
     setWarnings(warns);
+    if (e) triggerEmojiBurst(e);
   };
 
   const handleSavePreferences = () => {
@@ -64,6 +64,14 @@ export const SchedulerView: React.FC = () => {
     setIsEditingPreferences(false);
     const warns = runScheduler(7);
     setWarnings(warns);
+  };
+
+  const handleStatusToggle = (e: React.MouseEvent, session: ScheduledSession) => {
+    const nextStatus = session.status === 'completed' ? 'upcoming' : 'completed';
+    updateSessionStatus(session.id, nextStatus);
+    if (nextStatus === 'completed') {
+      triggerEmojiBurst(e);
+    }
   };
 
   const sessionsByDate: Record<string, ScheduledSession[]> = {};
@@ -83,55 +91,82 @@ export const SchedulerView: React.FC = () => {
 
   const totalPlannedMinutes = filteredSessions.reduce((acc, s) => acc + s.durationMinutes, 0);
 
-  const handleRescheduleSubmit = () => {
-    if (reschedulingSessionId && rescheduleDate && rescheduleTime) {
-      moveSession(reschedulingSessionId, rescheduleDate, rescheduleTime);
-      setReschedulingSessionId(null);
-    }
-  };
-
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
-      {/* Header & Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-indigo-600 uppercase tracking-widest mb-1">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Deterministic Algorithmic Pacing</span>
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Sarcastic Mentor Guidance Banner */}
+      <div className="p-4 sm:p-5 rounded-3xl bg-neutral-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl border border-neutral-800">
+        <div className="flex items-center gap-4">
+          <div
+            onClick={(e) => triggerEmojiBurst(e)}
+            className="w-14 h-14 rounded-2xl bg-neutral-800 border border-neutral-700 shrink-0 flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-all overflow-hidden relative group"
+            title="Click for Apple Fire pop! 🔥"
+          >
+            <img
+              src="/person.png"
+              alt="Mentor"
+              className="w-full h-full object-contain filter drop-shadow group-hover:rotate-6 transition-transform"
+            />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900">
-            Smart Study Scheduler
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 rounded-full bg-white/10 text-neutral-300">
+                FOCUS 2 OF 4: SMART SCHEDULE
+              </span>
+              <span className="text-xs">⚡</span>
+            </div>
+            <p className="text-xs sm:text-sm font-bold text-white leading-snug">
+              "Schedule generate ho gaya? Very nice. Ab schedule dekh kar mutthi band karke baith mat jaana, go to 'Track & Focus' sprint! 🗿🔥"
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setActiveTab('focus')}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-black font-bold text-xs hover:bg-neutral-200 transition-all shrink-0 hover:scale-105 active:scale-95 shadow-md"
+        >
+          <span>Next: Track & Focus</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Header & Main Actions */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 rounded-3xl bg-white border border-neutral-200 shadow-xs">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-black flex items-center gap-2">
+            <span>Automated Study Calendar</span>
+            <span className="text-xs px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-800 font-mono font-bold border border-neutral-200">
+              {data.scheduledSessions.length} Blocks
+            </span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1 max-w-2xl">
-            Calculates an optimal study calendar using your real exams, topic difficulty ratings,
-            confidence deficits, and daily study capacity. Kyu nhi hori padhai? Ab sab sorted hai!
+          <p className="text-xs text-neutral-500 mt-1 max-w-2xl">
+            Calculated algorithmically based on your exam dates, confidence deficits, and daily study capacity. No guesswork, zero cramming.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setIsEditingPreferences(!isEditingPreferences)}
-            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all"
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-bold transition-all"
           >
-            <Sliders className="w-4 h-4 text-slate-500" />
+            <Sliders className="w-4 h-4 text-neutral-600" />
             <span>Preferences</span>
           </button>
 
           <button
             onClick={clearSchedule}
-            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs font-semibold transition-all"
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-neutral-100 hover:bg-rose-50 text-neutral-600 hover:text-rose-600 text-xs font-semibold transition-all"
             title="Reset unlocked sessions"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Clear Unlocked</span>
+            <span>Reset Unlocked</span>
           </button>
 
           <button
-            onClick={handleGenerate}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95"
+            onClick={(e) => handleGenerate(e)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black hover:bg-neutral-800 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95"
           >
             <Sparkles className="w-4 h-4" />
-            <span>Generate / Rebalance Plan</span>
+            <span>Generate / Rebalance Plan 🔥</span>
           </button>
         </div>
       </div>
@@ -141,7 +176,7 @@ export const SchedulerView: React.FC = () => {
         <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs space-y-1">
           <div className="flex items-center gap-2 font-bold text-amber-900">
             <AlertTriangle className="w-4 h-4 shrink-0" />
-            <span>Workload Capacity Warning</span>
+            <span>Workload Capacity Notice</span>
           </div>
           {warnings.map((w, idx) => (
             <p key={idx} className="leading-relaxed pl-6">
@@ -151,20 +186,20 @@ export const SchedulerView: React.FC = () => {
         </div>
       )}
 
-      {/* Preferences Drawer / Modal */}
+      {/* Preferences Drawer */}
       {isEditingPreferences && (
-        <div className="p-6 rounded-3xl bg-white border border-indigo-200 shadow-xl space-y-5 animate-in fade-in">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 className="text-sm font-display font-bold text-slate-900 flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-indigo-600" />
-              <span>Scheduler Constraints & Preferences</span>
+        <div className="p-6 rounded-3xl bg-white border border-neutral-300 shadow-xl space-y-5 animate-in fade-in">
+          <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+            <h3 className="text-sm font-black text-black flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-black" />
+              <span>Study Pace Constraints & Preferences</span>
             </h3>
-            <span className="text-xs text-slate-500">Controls how sessions are distributed</span>
+            <span className="text-xs text-neutral-500">How many hours and breaks you prefer daily</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-neutral-700 mb-1.5">
                 Daily Study Target (Mins)
               </label>
               <input
@@ -174,16 +209,16 @@ export const SchedulerView: React.FC = () => {
                 step="15"
                 value={dailyTargetInput}
                 onChange={(e) => setDailyTargetInput(Number(e.target.value))}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-neutral-50 border border-neutral-300 rounded-xl px-3 py-2 text-xs text-black focus:outline-none focus:border-black font-sans"
               />
-              <span className="text-[10px] text-slate-500 mt-1 block">
+              <span className="text-[10px] text-neutral-500 mt-1 block">
                 {(dailyTargetInput / 60).toFixed(1)} hours/day max
               </span>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Preferred Study Time
+              <label className="block text-xs font-bold text-neutral-700 mb-1.5">
+                Preferred Study Slot
               </label>
               <select
                 value={preferredTimeInput}
@@ -192,7 +227,7 @@ export const SchedulerView: React.FC = () => {
                     e.target.value as 'morning' | 'afternoon' | 'evening' | 'night' | 'flexible'
                   )
                 }
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-neutral-50 border border-neutral-300 rounded-xl px-3 py-2 text-xs text-black focus:outline-none focus:border-black font-sans"
               >
                 <option value="morning">Morning (From 9:00 AM)</option>
                 <option value="afternoon">Afternoon (From 2:00 PM)</option>
@@ -203,13 +238,13 @@ export const SchedulerView: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-neutral-700 mb-1.5">
                 Max Session Duration
               </label>
               <select
                 value={sessionDurationInput}
                 onChange={(e) => setSessionDurationInput(Number(e.target.value))}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-neutral-50 border border-neutral-300 rounded-xl px-3 py-2 text-xs text-black focus:outline-none focus:border-black font-sans"
               >
                 <option value={30}>30 Minutes</option>
                 <option value={45}>45 Minutes (Optimal)</option>
@@ -219,13 +254,13 @@ export const SchedulerView: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-neutral-700 mb-1.5">
                 Break Between Blocks
               </label>
               <select
                 value={breakDurationInput}
                 onChange={(e) => setBreakDurationInput(Number(e.target.value))}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-neutral-50 border border-neutral-300 rounded-xl px-3 py-2 text-xs text-black focus:outline-none focus:border-black font-sans"
               >
                 <option value={5}>5 Minutes</option>
                 <option value={10}>10 Minutes</option>
@@ -234,16 +269,16 @@ export const SchedulerView: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-2 border-t border-neutral-100">
             <button
               onClick={() => setIsEditingPreferences(false)}
-              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200"
+              className="px-4 py-2 rounded-xl bg-neutral-100 text-neutral-700 text-xs font-bold hover:bg-neutral-200"
             >
               Cancel
             </button>
             <button
               onClick={handleSavePreferences}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold"
+              className="px-5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-md"
             >
               Save & Recalculate
             </button>
@@ -252,17 +287,17 @@ export const SchedulerView: React.FC = () => {
       )}
 
       {/* Date Filter Tabs & Plan Summary */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-4">
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1">
           <button
             onClick={() => setSelectedDayFilter('all')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`px-4 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
               selectedDayFilter === 'all'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
+                ? 'bg-black text-white shadow-xs'
+                : 'bg-white text-neutral-600 hover:text-black border border-neutral-200'
             }`}
           >
-            All Plan ({data.scheduledSessions.length})
+            All Sessions ({data.scheduledSessions.length})
           </button>
 
           {availableDates.map((dateStr) => {
@@ -275,10 +310,10 @@ export const SchedulerView: React.FC = () => {
               <button
                 key={dateStr}
                 onClick={() => setSelectedDayFilter(dateStr)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                   isSelected
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
+                    ? 'bg-black text-white shadow-xs'
+                    : 'bg-white text-neutral-600 hover:text-black border border-neutral-200'
                 }`}
               >
                 {isToday ? 'Today' : dayLabel} ({sessionsByDate[dateStr]?.length || 0})
@@ -287,26 +322,26 @@ export const SchedulerView: React.FC = () => {
           })}
         </div>
 
-        <div className="text-xs text-slate-600 font-mono flex items-center gap-2 shrink-0">
-          <Clock className="w-3.5 h-3.5 text-indigo-600" />
+        <div className="text-xs text-neutral-600 font-mono flex items-center gap-2 shrink-0">
+          <Clock className="w-3.5 h-3.5 text-black" />
           <span>
             {Math.round(totalPlannedMinutes / 60)}h {totalPlannedMinutes % 60}m planned
           </span>
         </div>
       </div>
 
-      {/* Session Cards List (Design-card white background) */}
+      {/* Sessions Grid */}
       {filteredSessions.length === 0 ? (
         <div className="p-12 rounded-3xl bg-white border-2 border-dashed border-neutral-300 text-center space-y-4">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-neutral-100 flex items-center justify-center text-black font-bold text-xl">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-neutral-100 flex items-center justify-center text-black font-bold text-2xl">
             📅
           </div>
-          <h3 className="text-base font-black text-black">No sessions scheduled? Stop LARPing 💀</h3>
-          <p className="text-xs text-neutral-500 max-w-md mx-auto leading-relaxed font-sans">
-            You have upcoming exams but zero study blocks on the calendar. That's a massive skill issue. Let the algorithm distribute your syllabus without cramming!
+          <h3 className="text-base font-black text-black">No sessions scheduled on this calendar</h3>
+          <p className="text-xs text-neutral-500 max-w-md mx-auto leading-relaxed">
+            Click the button below to have the scheduler distribute your syllabus topics across the upcoming days automatically.
           </p>
           <button
-            onClick={handleGenerate}
+            onClick={(e) => handleGenerate(e)}
             className="px-6 py-3 rounded-2xl bg-black hover:bg-neutral-800 text-white font-bold text-xs shadow-md hover:scale-105 active:scale-95 transition-all"
           >
             Generate Real Study Plan 🔥
@@ -321,12 +356,12 @@ export const SchedulerView: React.FC = () => {
             return (
               <div
                 key={session.id}
-                className={`p-5 rounded-3xl border transition-all flex flex-col justify-between group design-card ${
+                className={`p-5 rounded-3xl border transition-all flex flex-col justify-between group ${
                   isCompleted
-                    ? 'bg-slate-50/80 border-slate-200 opacity-70'
+                    ? 'bg-neutral-50 border-neutral-200 opacity-70'
                     : session.isLocked
-                    ? 'bg-amber-50/30 border-amber-200'
-                    : 'bg-white border-slate-200'
+                    ? 'bg-amber-50/40 border-amber-300'
+                    : 'bg-white border-neutral-200 hover:border-neutral-300 shadow-xs hover:shadow-md'
                 }`}
               >
                 <div>
@@ -344,7 +379,7 @@ export const SchedulerView: React.FC = () => {
                           {subject.code}
                         </span>
                       )}
-                      <span className="text-[11px] font-mono text-slate-500">{session.date}</span>
+                      <span className="text-[11px] font-mono text-neutral-500 font-semibold">{session.date}</span>
                     </div>
 
                     <div className="flex items-center gap-1">
@@ -352,10 +387,10 @@ export const SchedulerView: React.FC = () => {
                         onClick={() => toggleLockSession(session.id)}
                         className={`p-1.5 rounded-lg text-xs transition-colors ${
                           session.isLocked
-                            ? 'bg-amber-100 text-amber-700'
-                            : 'text-slate-400 hover:text-slate-700'
+                            ? 'bg-amber-100 text-amber-800 font-bold'
+                            : 'text-neutral-400 hover:text-black'
                         }`}
-                        title={session.isLocked ? 'Locked (won’t move)' : 'Lock session'}
+                        title={session.isLocked ? 'Locked (won’t move)' : 'Lock session slot'}
                       >
                         {session.isLocked ? (
                           <Lock className="w-3.5 h-3.5" />
@@ -366,7 +401,7 @@ export const SchedulerView: React.FC = () => {
 
                       <button
                         onClick={() => deleteSession(session.id)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 transition-colors"
+                        className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-600 transition-colors"
                         title="Delete session"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -375,60 +410,52 @@ export const SchedulerView: React.FC = () => {
                   </div>
 
                   <h4
-                    className={`text-sm font-semibold mb-2 ${
-                      isCompleted ? 'line-through text-slate-400' : 'text-slate-900'
+                    className={`text-sm font-bold mb-2 ${
+                      isCompleted ? 'line-through text-neutral-400' : 'text-black'
                     }`}
                   >
                     {session.topicName}
                   </h4>
 
-                  <div className="flex items-center gap-2 text-xs font-mono text-slate-600 mb-3">
-                    <Clock className="w-3.5 h-3.5 text-indigo-600" />
+                  <div className="flex items-center gap-2 text-xs font-mono text-neutral-600 mb-3">
+                    <Clock className="w-3.5 h-3.5 text-black" />
                     <span>
                       {session.startTime} - {session.endTime}
                     </span>
-                    <span className="text-slate-400">•</span>
-                    <span className="text-slate-500">{session.durationMinutes}m</span>
+                    <span className="text-neutral-300">•</span>
+                    <span className="text-neutral-500">{session.durationMinutes}m</span>
                   </div>
 
                   <button
                     onClick={() => setSelectedSessionForInfo(session)}
-                    className="w-full flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-300 text-[11px] text-slate-700 transition-colors mb-3 group/prio"
+                    className="w-full flex items-center justify-between p-2 rounded-xl bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-[11px] text-neutral-700 transition-colors mb-3"
                   >
-                    <span className="flex items-center gap-1.5">
-                      <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                    <span className="flex items-center gap-1.5 font-sans">
+                      <Layers className="w-3.5 h-3.5 text-black" />
                       <span>Priority Rank:</span>
-                      <span className="font-mono font-bold text-indigo-700">
+                      <span className="font-mono font-bold text-black">
                         {session.priorityScore} pts
                       </span>
                     </span>
-                    <Info className="w-3.5 h-3.5 text-slate-400 group-hover/prio:text-indigo-600" />
+                    <Info className="w-3.5 h-3.5 text-neutral-400" />
                   </button>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                <div className="pt-3 border-t border-neutral-100 flex items-center justify-between gap-2">
                   <button
-                    onClick={() => {
-                      setReschedulingSessionId(session.id);
-                      setRescheduleDate(session.date);
-                      setRescheduleTime(session.startTime);
-                    }}
-                    className="text-xs text-slate-500 hover:text-indigo-600 font-medium transition-colors"
+                    onClick={() => setActiveTab('focus')}
+                    className="flex items-center gap-1 text-xs text-neutral-600 hover:text-black font-bold transition-colors"
                   >
-                    Reschedule
+                    <Flame className="w-3.5 h-3.5 text-rose-500" />
+                    <span>Focus Timer</span>
                   </button>
 
                   <button
-                    onClick={() =>
-                      updateSessionStatus(
-                        session.id,
-                        isCompleted ? 'upcoming' : 'completed'
-                      )
-                    }
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                    onClick={(e) => handleStatusToggle(e, session)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                       isCompleted
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
+                        ? 'bg-neutral-200 text-neutral-700'
+                        : 'bg-black text-white hover:bg-neutral-800'
                     }`}
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
@@ -441,120 +468,74 @@ export const SchedulerView: React.FC = () => {
         </div>
       )}
 
+      {/* Next Step Action Box */}
+      <div className="p-6 rounded-3xl bg-neutral-100 border border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h4 className="text-sm font-black text-black">Ready for Focus Step 3?</h4>
+          <p className="text-xs text-neutral-600 mt-0.5">
+            Hop into the Focus Timer & Checklist to check off completed topics and blast through 25-minute sprints.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setActiveTab('focus')}
+          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-black hover:bg-neutral-800 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 shrink-0"
+        >
+          <span>Start Focus Sprint & Checklist</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+
       {/* Priority Breakdown Modal */}
       {selectedSessionForInfo && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-indigo-200 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-display font-bold text-slate-900 flex items-center gap-2">
-                <Info className="w-4 h-4 text-indigo-600" />
-                <span>Priority Logic Breakdown</span>
+          <div className="bg-white border border-neutral-200 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <h3 className="text-sm font-black text-black flex items-center gap-2">
+                <Info className="w-4 h-4 text-black" />
+                <span>Deterministic Priority Rationale</span>
               </h3>
               <button
                 onClick={() => setSelectedSessionForInfo(null)}
-                className="text-slate-400 hover:text-slate-700"
+                className="w-7 h-7 rounded-full bg-neutral-100 text-neutral-500 hover:text-black flex items-center justify-center font-bold text-xs"
               >
                 ✕
               </button>
             </div>
 
-            <div>
-              <h4 className="text-sm font-semibold text-indigo-700">
-                {selectedSessionForInfo.topicName}
-              </h4>
-              <p className="text-xs text-slate-500 mt-1">
-                Calculated Priority Score:{' '}
-                <span className="font-mono font-bold text-slate-900">
-                  {selectedSessionForInfo.priorityScore}
-                </span>{' '}
-                pts
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                Contributing Algorithmic Factors:
-              </span>
-              <ul className="space-y-1.5">
-                {selectedSessionForInfo.priorityReasons?.map((reason, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-start gap-2 text-xs text-slate-700 p-2.5 rounded-xl bg-slate-50 border border-slate-200"
-                  >
-                    <ChevronRight className="w-3.5 h-3.5 text-indigo-600 shrink-0 mt-0.5" />
-                    <span>{reason}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <p className="text-[11px] text-slate-500 italic">
-              PadhloShawtys balances your study calendar by prioritizing impending deadlines and
-              topics where your confidence is lowest.
-            </p>
-
-            <button
-              onClick={() => setSelectedSessionForInfo(null)}
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs"
-            >
-              Got It
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Reschedule Modal */}
-      {reschedulingSessionId && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-indigo-200 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
-            <h3 className="text-sm font-display font-bold text-slate-900 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-indigo-600" />
-              <span>Reschedule Study Session</span>
-            </h3>
-
-            <div className="space-y-3">
+            <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Target Date
-                </label>
-                <input
-                  type="date"
-                  value={rescheduleDate}
-                  onChange={(e) => setRescheduleDate(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900"
-                />
+                <span className="font-bold text-neutral-500 block">Topic:</span>
+                <span className="text-black font-semibold">{selectedSessionForInfo.topicName}</span>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Start Time (HH:mm)
-                </label>
-                <input
-                  type="time"
-                  value={rescheduleTime}
-                  onChange={(e) => setRescheduleTime(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900"
-                />
+              <div className="p-3 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-neutral-500 font-medium">Composite Priority Score:</span>
+                  <span className="font-mono font-black text-black">
+                    {selectedSessionForInfo.priorityScore} pts
+                  </span>
+                </div>
+                <p className="text-[11px] text-neutral-600 leading-relaxed font-sans">
+                  {selectedSessionForInfo.priorityReasons?.join(' • ') ||
+                    'Calculated from topic difficulty, user confidence deficit, and upcoming exam proximity.'}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] text-neutral-500 pt-1">
+                <span>Date: {selectedSessionForInfo.date}</span>
+                <span>
+                  {selectedSessionForInfo.startTime} - {selectedSessionForInfo.endTime}
+                </span>
               </div>
             </div>
 
-            <p className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
-              Note: Rescheduling this session will automatically lock it so future regeneration
-              won't move it.
-            </p>
-
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="pt-2 flex justify-end">
               <button
-                onClick={() => setReschedulingSessionId(null)}
-                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold"
+                onClick={() => setSelectedSessionForInfo(null)}
+                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-bold"
               >
-                Cancel
-              </button>
-              <button
-                onClick={handleRescheduleSubmit}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold"
-              >
-                Save Time
+                Close
               </button>
             </div>
           </div>
