@@ -1,5 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useSpring,
+  useMotionValue,
+  useMotionTemplate,
+} from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import { playSound } from '../../utils/audio';
 import { triggerEmojiBurst } from '../../utils/emojiPop';
@@ -45,18 +53,63 @@ export const LandingView: React.FC = () => {
   const lastClickTimeRef = useRef<number>(0);
   const comboTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const heroRef = useRef<HTMLElement>(null);
-  const { scrollY } = useScroll();
+  const heroContainerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroContainerRef,
+    offset: ['start start', 'end end'],
+  });
 
-  // Scroll-driven transforms:
-  // As user scrolls, main text fades in smoothly & image fades in and expands scale up to 1.25x
-  const imageScrollScale = useTransform(scrollY, [0, 450], [1.0, 1.25]);
-  const smoothImageScale = useSpring(imageScrollScale, { stiffness: 120, damping: 20 });
-  const imageScrollOpacity = useTransform(scrollY, [0, 100], [0.9, 1.0]);
+  // Responsive, silky-smooth spring interpolation
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 260,
+    damping: 28,
+    restDelta: 0.0005,
+  });
+
+  // 1. Title scroll blur fade-in & scale
+  // Phase 1 (0 -> 0.22): Smooth fade-in & unblur (visible at 0.35 opacity initially, never missing)
+  // Phase 2 (0.22 -> 0.88): 100% VISIBLE, CRISP, AND FULLY PINNED PLATEAU!
+  // Phase 3 (0.88 -> 1.0): Gentle exit as overall website scrolls down
+  const titleBlur = useTransform(smoothProgress, [0, 0.22], [14, 0]);
+  const titleOpacity = useTransform(smoothProgress, [0, 0.20], [0.35, 1]);
+  const titleScale = useTransform(smoothProgress, [0, 0.22], [0.94, 1]);
+  const titleY = useTransform(smoothProgress, [0, 0.22], [18, 0]);
+  const titleFilter = useMotionTemplate`blur(${titleBlur}px)`;
+
+  // 2. Subtitle scroll blur fade-in & slide-up
+  const subtitleBlur = useTransform(smoothProgress, [0, 0.25], [10, 0]);
+  const subtitleOpacity = useTransform(smoothProgress, [0, 0.22], [0.3, 1]);
+  const subtitleY = useTransform(smoothProgress, [0, 0.25], [14, 0]);
+  const subtitleFilter = useMotionTemplate`blur(${subtitleBlur}px)`;
+
+  // 3. CTA Buttons & Social Proof
+  const ctaOpacity = useTransform(smoothProgress, [0.04, 0.26], [0.3, 1]);
+  const ctaY = useTransform(smoothProgress, [0.04, 0.26], [12, 0]);
+  const ctaScale = useTransform(smoothProgress, [0.04, 0.26], [0.96, 1]);
+
+  // 4. Mascot scroll unblur & scale
+  const mascotBlur = useTransform(smoothProgress, [0, 0.22], [10, 0]);
+  const mascotOpacity = useTransform(smoothProgress, [0, 0.20], [0.5, 1]);
+  const mascotScrollScale = useTransform(smoothProgress, [0, 0.28], [0.94, 1.02]);
+  const mascotFilter = useMotionTemplate`blur(${mascotBlur}px)`;
+
+  // 5. Scroll Prompt Pill at bottom: visible initially, fades out as user begins scroll
+  const scrollPromptOpacity = useTransform(smoothProgress, [0, 0.10], [1, 0]);
+  const scrollPromptY = useTransform(smoothProgress, [0, 0.10], [0, 10]);
+  const [isPromptDismissed, setIsPromptDismissed] = useState(false);
+  useEffect(() => {
+    return smoothProgress.on('change', (v) => {
+      setIsPromptDismissed(v > 0.12);
+    });
+  }, [smoothProgress]);
+
+  // 6. Section Exit: only after 0.88 does it gently lift
+  const heroExitY = useTransform(smoothProgress, [0.88, 1.0], [0, -22]);
+  const heroExitOpacity = useTransform(smoothProgress, [0.94, 1.0], [1, 0.95]);
 
   // Dynamic scale for badges/comments behind the mascot (combines scroll & rapid clicks)
-  const badgeScrollScale = useTransform(scrollY, [0, 450], [0.95, 1.2]);
-  const smoothBadgeScrollScale = useSpring(badgeScrollScale, { stiffness: 120, damping: 20 });
+  const badgeScrollScale = useTransform(smoothProgress, [0, 0.28], [0.95, 1.05]);
+  const smoothBadgeScrollScale = useSpring(badgeScrollScale, { stiffness: 160, damping: 20 });
 
   const comboMotion = useMotionValue(1);
   const smoothComboScale = useSpring(comboMotion, { stiffness: 320, damping: 16 });
@@ -66,14 +119,16 @@ export const LandingView: React.FC = () => {
     ([s, c]) => Number(s || 1) * Number(c || 1)
   );
 
+  const combinedMascotScale = useTransform(
+    [mascotScrollScale, smoothComboScale],
+    ([m, c]) => Number(m || 1) * Number(c || 1)
+  );
+
   useEffect(() => {
     return () => {
       if (comboTimerRef.current) clearTimeout(comboTimerRef.current);
     };
   }, []);
-
-  const textScrollOpacity = useTransform(scrollY, [0, 120], [0.92, 1.0]);
-  const textScrollY = useTransform(scrollY, [0, 450], [0, -15]);
 
   // Mouse tilt tracking for the mascot image
   const mouseX = useMotionValue(0);
@@ -153,275 +208,304 @@ export const LandingView: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-24 pb-16 animate-in fade-in duration-300">
-      {/* 1. Hero Section with Interactive Mascot & Scroll-Driven Scale */}
-      <section ref={heroRef} className="relative pt-6 sm:pt-10">
-        {/* Subtle, clean monochrome dot background */}
-        <div className="absolute inset-0 bg-dot-pattern opacity-60 pointer-events-none -z-10" />
+    <div className="space-y-20 sm:space-y-24 pb-16 animate-in fade-in duration-300 overflow-x-clip">
+      {/* 1. Hero Section with Scroll-Pinned Blur Fade-In */}
+      <div ref={heroContainerRef} className="relative h-[220vh] sm:h-[260vh] lg:h-[280vh] -mt-4">
+        <motion.div
+          style={{ y: heroExitY, opacity: heroExitOpacity }}
+          className="sticky top-14 sm:top-20 h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-5.5rem)] flex flex-col justify-center overflow-hidden"
+        >
+          {/* Subtle, clean monochrome dot background */}
+          <div className="absolute inset-0 bg-dot-pattern opacity-60 pointer-events-none -z-10" />
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          {/* Left Column: Headlines & CTAs with Fade-in and Scroll Responsiveness */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            style={{ opacity: textScrollOpacity, y: textScrollY }}
-            className="lg:col-span-7 space-y-6 text-left"
-          >
-            {/* The Main Title requested by User: Crisp Black-and-White Streetwear / Editorial typography */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.8 }}
-              className="text-4xl sm:text-5xl lg:text-[64px] font-sans font-black tracking-tight text-black leading-[1.12]"
-            >
-              Kyu nhi hori padhai? <br />
-              <span className="inline-flex flex-wrap items-baseline gap-2.5 mt-2">
-                <span className="text-neutral-900 font-extrabold">kyuki aap</span>
-                <span className="inline-flex items-baseline gap-2 px-4 py-1.5 rounded-2xl bg-black text-white shadow-[0_12px_28px_-6px_rgba(0,0,0,0.35)] -rotate-1 hover:rotate-0 transition-transform">
-                  <span className="font-extrabold text-2xl sm:text-3xl lg:text-[40px] tracking-tight text-neutral-300">
-                    Padhlo
+          <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-10 items-center px-2 sm:px-4">
+            {/* Left Column: Headlines & CTAs with Scroll-Driven Blur Fade-In */}
+            <div className="lg:col-span-7 space-y-3 sm:space-y-6 text-left">
+              {/* The Main Title requested by User: Crisp Black-and-White Streetwear / Editorial typography with Scroll Blur Fade-In */}
+              <motion.h1
+                style={{
+                  filter: titleFilter,
+                  opacity: titleOpacity,
+                  scale: titleScale,
+                  y: titleY,
+                }}
+                className="text-2xl sm:text-4xl lg:text-[62px] font-sans font-black tracking-tight text-black leading-[1.12]"
+              >
+                Kyu nhi hori padhai? <br />
+                <span className="inline-flex flex-wrap items-baseline gap-1.5 sm:gap-2 mt-0.5 sm:mt-2">
+                  <span className="text-neutral-900 font-extrabold text-xl sm:text-3xl lg:text-[48px]">kyuki aap</span>
+                  <span className="inline-flex items-baseline gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-0.5 sm:py-1.5 rounded-2xl bg-black text-white shadow-[0_12px_28px_-6px_rgba(0,0,0,0.35)] -rotate-1 hover:rotate-0 transition-transform">
+                    <span className="font-extrabold text-lg sm:text-3xl lg:text-[38px] tracking-tight text-neutral-300">
+                      Padhlo
+                    </span>
+                    <span className="font-black text-xl sm:text-4xl lg:text-[58px] tracking-tighter text-white uppercase italic">
+                      SHAWTYS
+                    </span>
                   </span>
-                  <span className="font-black text-3xl sm:text-5xl lg:text-[62px] tracking-tighter text-white uppercase italic">
-                    SHAWTYS
-                  </span>
+                  <span className="text-neutral-900 font-extrabold text-xl sm:text-3xl lg:text-[48px]">nhi use karte! 😭🔥</span>
                 </span>
-                <span className="text-neutral-900 font-extrabold">nhi use karte! 😭🔥</span>
-              </span>
-            </motion.h1>
+              </motion.h1>
 
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.35, duration: 0.8 }}
-              className="text-base sm:text-lg text-neutral-600 max-w-xl leading-relaxed font-sans"
-            >
-              Exams sir pe hain, syllabus pahad jaisa hai aur bro aesthetic notes ka LARP kar raha hai?{' '}
-              Stop the cap and lock in fr fr! <strong className="text-black font-bold">PadhloShawtys</strong>{' '}
-              aapka algorithmic study OS hai jo topics ko plan karta hai, drift-proof Pomodoro se focus lock karta hai,
-              aur aapko completely cooked se certified academic weapon bana deta hai 🗿🔥
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.6 }}
-              className="flex flex-wrap items-stretch sm:items-center gap-3 pt-2"
-            >
-              <button
-                onClick={() => setActiveTab('exams')}
-                className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-black hover:bg-neutral-800 text-white font-sans font-bold text-sm shadow-[0_12px_28px_-6px_rgba(0,0,0,0.35)] transition-all duration-200 hover:scale-105 active:scale-95 group"
+              {/* Subtitle with Blur Fade-In */}
+              <motion.p
+                style={{
+                  filter: subtitleFilter,
+                  opacity: subtitleOpacity,
+                  y: subtitleY,
+                }}
+                className="text-xs sm:text-base lg:text-lg text-neutral-600 max-w-xl leading-relaxed font-sans line-clamp-3 sm:line-clamp-none"
               >
-                <GraduationCap className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
-                <span>1. Enter Subjects & Exams</span>
-              </button>
+                Exams sir pe hain, syllabus pahad jaisa hai aur bro aesthetic notes ka LARP kar raha hai?{' '}
+                Stop the cap and lock in fr fr! <strong className="text-black font-bold">PadhloShawtys</strong>{' '}
+                aapka algorithmic study OS hai jo topics ko plan karta hai, drift-proof Pomodoro se focus lock karta hai,
+                aur aapko completely cooked se certified academic weapon bana deta hai 🗿🔥
+              </motion.p>
 
-              <button
-                onClick={() => setActiveTab('scheduler')}
-                className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white hover:bg-neutral-50 text-black border-2 border-black font-sans font-bold text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:scale-105 active:scale-95"
+              {/* CTAs with Fade-In */}
+              <motion.div
+                style={{
+                  opacity: ctaOpacity,
+                  y: ctaY,
+                  scale: ctaScale,
+                }}
+                className="space-y-4"
               >
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <span>2. Auto-Create Schedule</span>
-              </button>
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3 pt-1">
+                  <button
+                    onClick={() => setActiveTab('exams')}
+                    className="col-span-2 sm:col-auto flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl bg-black hover:bg-neutral-800 text-white font-sans font-bold text-xs sm:text-sm shadow-[0_12px_28px_-6px_rgba(0,0,0,0.35)] transition-all duration-200 hover:scale-105 active:scale-95 group"
+                  >
+                    <GraduationCap className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
+                    <span>1. Enter Subjects & Exams</span>
+                  </button>
 
-              <button
-                onClick={() => setActiveTab('login')}
-                className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-neutral-900 hover:bg-black text-white font-sans font-bold text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95"
-              >
-                {user?.isLoggedIn ? (
-                  <>
-                    <User className="w-4 h-4 text-emerald-400" />
-                    <span>{user.name.split(' ')[0]}</span>
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="w-4 h-4 text-white" />
-                    <span>Sign In</span>
-                  </>
-                )}
-              </button>
+                  <button
+                    onClick={() => setActiveTab('scheduler')}
+                    className="col-span-2 sm:col-auto flex items-center justify-center gap-2 px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl bg-white hover:bg-neutral-50 text-black border-2 border-black font-sans font-bold text-xs sm:text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:scale-105 active:scale-95"
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-500" />
+                    <span>2. Auto-Create Schedule</span>
+                  </button>
 
-              <button
-                onClick={loadDemoMode}
-                className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-300 font-mono font-semibold text-xs transition-all hover:scale-105"
-              >
-                <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Demo</span>
-              </button>
-            </motion.div>
+                  <button
+                    onClick={() => setActiveTab('login')}
+                    className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3.5 rounded-2xl bg-neutral-900 hover:bg-black text-white font-sans font-bold text-xs sm:text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95"
+                  >
+                    {user?.isLoggedIn ? (
+                      <>
+                        <User className="w-4 h-4 text-emerald-400" />
+                        <span>{user.name.split(' ')[0]}</span>
+                      </>
+                    ) : (
+                      <>
+                        <LogIn className="w-4 h-4 text-white" />
+                        <span>Sign In</span>
+                      </>
+                    )}
+                  </button>
 
-            {/* Social Trust Metrics */}
-            <div className="pt-3 flex flex-wrap items-center gap-6 text-xs text-neutral-600">
-              <div className="flex items-center gap-1.5 font-medium">
-                <span className="flex text-black">★★★★★</span>
-                <span className="font-bold text-black font-mono">4.9/5</span>
-                <span>by 10,000+ Students</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-black" />
-                <span className="font-medium text-neutral-800">100% Free & Local Privacy</span>
-              </div>
+                  <button
+                    onClick={loadDemoMode}
+                    className="flex items-center justify-center gap-2 px-3 py-2.5 sm:py-3.5 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-300 font-mono font-semibold text-xs transition-all hover:scale-105"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    <span>Demo</span>
+                  </button>
+                </div>
+
+                {/* Social Trust Metrics */}
+                <div className="pt-2 flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-neutral-600">
+                  <div className="flex items-center gap-1.5 font-medium">
+                    <span className="flex text-black">★★★★★</span>
+                    <span className="font-bold text-black font-mono">4.9/5</span>
+                    <span>by 10,000+ Students</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-black" />
+                    <span className="font-medium text-neutral-800">100% Free & Local Privacy</span>
+                  </div>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
 
-          {/* Right Column: INTERACTIVE MASCOT WITH MOUSE TILT & SCROLL SCALE INCREASE */}
-          <div
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            className="lg:col-span-5 relative flex flex-col items-center justify-center perspective-[1000px] select-none"
-          >
-            {/* Subtle monochrome ambient backdrop ring */}
-            <div className="absolute inset-0 bg-neutral-900/5 rounded-full blur-3xl -z-10 scale-95" />
-
-            {/* Rapid Click Combo Pill (Floats at z-30 over everything when user clicks continuously) */}
-            <AnimatePresence>
-              {clickCombo >= 2 && (
-                <motion.div
-                  initial={{ scale: 0, y: -20, opacity: 0 }}
-                  animate={{ scale: 1, y: 0, opacity: 1 }}
-                  exit={{ scale: 0, y: -20, opacity: 0 }}
-                  className="absolute -top-6 sm:-top-8 left-1/2 -translate-x-1/2 z-30 bg-black text-white px-4 py-1.5 rounded-full border-2 border-white shadow-[0_10px_25px_rgba(0,0,0,0.4)] flex items-center gap-2 font-mono text-xs font-black tracking-wider whitespace-nowrap pointer-events-none"
-                >
-                  <Flame className="w-4 h-4 text-amber-400 fill-amber-400 animate-spin" />
-                  <span>🔥 {clickCombo}X SCOLD COMBO! INTENSITY {Math.round(100 + clickCombo * 25)}%</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Sarcastic Satire Sticker (Top Left) - BEHIND (z-10) */}
-            <motion.div
-              style={{ scale: totalBadgeScale }}
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
-              whileHover={{ scale: 1.1, rotate: 0 }}
-              onClick={handleMascotClick}
-              className="absolute -top-4 -left-4 sm:top-2 sm:-left-8 z-10 bg-black text-white px-3 py-2 rounded-xl border border-neutral-700 shadow-md flex items-center gap-2 cursor-pointer font-sans font-black text-xs uppercase"
-            >
-              <span>💀</span>
-              <span>BRO IS COOKED FR</span>
-            </motion.div>
-
-            {/* Sarcastic Satire Sticker (Top Right) - BEHIND (z-10) */}
-            <motion.div
-              style={{ scale: totalBadgeScale }}
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-              whileHover={{ scale: 1.1, rotate: 0 }}
-              onClick={handleMascotClick}
-              className="absolute top-2 -right-4 sm:top-4 sm:-right-8 z-10 bg-white text-black px-3 py-2 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center gap-2 cursor-pointer font-sans font-black text-xs uppercase"
-            >
-              <span>⚡</span>
-              <span>AURA +5,000</span>
-            </motion.div>
-
-            {/* Custom Matte Obsidian Speech Capsule - BEHIND (z-10) */}
-            <motion.div
-              key={mascotQuoteIndex}
-              style={{ scale: totalBadgeScale }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              onClick={handleMascotClick}
-              whileTap={{ scale: 0.96 }}
-              className="relative z-10 mb-4 bg-[#0A0A0A] text-white p-4 sm:p-4.5 rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.35)] border border-neutral-700/80 max-w-sm cursor-pointer hover:border-neutral-500 hover:shadow-[0_24px_48px_-10px_rgba(0,0,0,0.45)] transition-all group"
-              title="Click mentor for advice + confetti!"
-            >
-              {/* Top Meta Bar */}
-              <div className="flex items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-neutral-800">
-                <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  <span className="font-mono text-[10px] tracking-widest text-neutral-400 uppercase font-bold">
-                    MENTOR.DISPATCH // 0{mascotQuoteIndex + 1}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-neutral-900 border border-neutral-700 text-neutral-300 font-mono text-[9px] group-hover:bg-white group-hover:text-black group-hover:border-white transition-colors font-semibold">
-                  <span>TAP TO CYCLE</span>
-                  <span className="font-bold">↻</span>
-                </div>
-              </div>
-
-              {/* Punchy Desi Quote in Authentic SF Pro Display Font */}
-              <p className="text-white font-sans font-semibold text-[13px] sm:text-[14px] leading-snug tracking-tight antialiased">
-                {MASCOT_QUOTES[mascotQuoteIndex]}
-              </p>
-
-              {/* Bottom Subtle Speech Pointer Tail pointing down towards mentor */}
-              <div className="absolute -bottom-2 right-16 w-3.5 h-3.5 bg-[#0A0A0A] border-r border-b border-neutral-700/80 rotate-45 transform"></div>
-            </motion.div>
-
-            {/* Mascot Image Container with Scroll Scale & 3D Interactive Tilt */}
+            {/* Right Column: INTERACTIVE MASCOT WITH MOUSE TILT & SCROLL SCALE INCREASE */}
             <motion.div
               style={{
-                scale: smoothImageScale,
-                opacity: imageScrollOpacity,
-                rotateX,
-                rotateY,
-                transformPerspective: 1000,
+                filter: mascotFilter,
+                opacity: mascotOpacity,
               }}
-              onClick={handleMascotClick}
-              whileTap={{ scale: 0.94 }}
-              className="relative w-full max-w-[340px] sm:max-w-[380px] cursor-pointer group"
-              title="Click mentor for motivation + confetti!"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              className="lg:col-span-5 relative flex flex-col items-center justify-center perspective-[1000px] select-none"
             >
-              {/* ============================================================== */}
-              {/* Floating Badges BEHIND the Mascot Cutout (z-10)               */}
-              {/* ============================================================== */}
+              {/* Subtle monochrome ambient backdrop ring */}
+              <div className="absolute inset-0 bg-neutral-900/5 rounded-full blur-3xl -z-10 scale-95" />
 
-              {/* Floating Badge 1: Stark Black Card - BEHIND (z-10) */}
+              {/* Rapid Click Combo Pill (Floats at z-30 over everything when user clicks continuously) */}
+              <AnimatePresence>
+                {clickCombo >= 2 && (
+                  <motion.div
+                    initial={{ scale: 0, y: -20, opacity: 0 }}
+                    animate={{ scale: 1, y: 0, opacity: 1 }}
+                    exit={{ scale: 0, y: -20, opacity: 0 }}
+                    className="absolute -top-6 sm:-top-8 left-1/2 -translate-x-1/2 z-30 bg-black text-white px-4 py-1.5 rounded-full border-2 border-white shadow-[0_10px_25px_rgba(0,0,0,0.4)] flex items-center gap-2 font-mono text-xs font-black tracking-wider whitespace-nowrap pointer-events-none"
+                  >
+                    <Flame className="w-4 h-4 text-amber-400 fill-amber-400 animate-spin" />
+                    <span>🔥 {clickCombo}X SCOLD COMBO! INTENSITY {Math.round(100 + clickCombo * 25)}%</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Sarcastic Satire Sticker (Top Left) - BEHIND (z-10) */}
               <motion.div
                 style={{ scale: totalBadgeScale }}
                 animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute bottom-4 -left-4 z-10 bg-black text-white p-3 sm:p-3.5 rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.3)] border border-neutral-800 flex items-center gap-3 text-xs hover:scale-105 transition-transform"
+                transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+                whileHover={{ scale: 1.1, rotate: 0 }}
+                onClick={handleMascotClick}
+                className="hidden sm:flex absolute -top-3 -left-2 sm:top-2 sm:-left-8 z-10 bg-black text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-neutral-700 shadow-md items-center gap-1.5 sm:gap-2 cursor-pointer font-sans font-black text-[10px] sm:text-xs uppercase"
               >
-                <div className="w-8 h-8 rounded-xl bg-neutral-900 text-amber-400 flex items-center justify-center font-bold border border-neutral-800">
-                  <Flame className="w-4.5 h-4.5 fill-amber-400" />
-                </div>
-                <div>
-                  <span className="font-bold text-white block font-sans tracking-tight">5-Day Study Streak</span>
-                  <span className="text-[10px] text-neutral-400 font-mono">+75 XP TODAY</span>
-                </div>
+                <span>💀</span>
+                <span>BRO IS COOKED FR</span>
               </motion.div>
 
-              {/* Floating Badge 2: Crisp White Card with 2px Black Border - BEHIND (z-10) */}
+              {/* Sarcastic Satire Sticker (Top Right) - BEHIND (z-10) */}
               <motion.div
                 style={{ scale: totalBadgeScale }}
                 animate={{ y: [0, 6, 0] }}
-                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute top-20 -right-4 z-10 bg-white text-black p-3 sm:p-3.5 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black flex items-center gap-3 text-xs hover:scale-105 transition-transform"
+                transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+                whileHover={{ scale: 1.1, rotate: 0 }}
+                onClick={handleMascotClick}
+                className="hidden sm:flex absolute top-1 -right-2 sm:top-4 sm:-right-8 z-10 bg-white text-black px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] items-center gap-1.5 sm:gap-2 cursor-pointer font-sans font-black text-[10px] sm:text-xs uppercase"
               >
-                <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center font-bold font-mono">
-                  ⚡
-                </div>
-                <div>
-                  <span className="font-bold text-black block font-sans tracking-tight">Calculus Midterm</span>
-                  <span className="text-[10px] text-neutral-600 font-mono font-semibold">In 6 Days • Target A</span>
-                </div>
+                <span>⚡</span>
+                <span>AURA +5,000</span>
               </motion.div>
 
-              {/* ============================================================== */}
-              {/* Mascot Cutout Image without background - IN FRONT AT z-20     */}
-              {/* ============================================================== */}
-              <img
-                src="/padhlo-mascot.png"
-                alt="PadhloShawtys Mentor"
-                className="relative z-20 w-full h-auto drop-shadow-[0_25px_35px_rgba(0,0,0,0.18)] group-hover:drop-shadow-[0_30px_45px_rgba(0,0,0,0.28)] transition-all duration-300 select-none pointer-events-auto"
-                draggable={false}
-              />
+              {/* Custom Matte Obsidian Speech Capsule - BEHIND (z-10) */}
+              <motion.div
+                key={mascotQuoteIndex}
+                style={{ scale: totalBadgeScale }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={handleMascotClick}
+                whileTap={{ scale: 0.96 }}
+                className="relative z-10 mb-2 sm:mb-4 bg-[#0A0A0A] text-white p-2.5 sm:p-4 rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.35)] border border-neutral-700/80 max-w-[270px] sm:max-w-sm cursor-pointer hover:border-neutral-500 hover:shadow-[0_24px_48px_-10px_rgba(0,0,0,0.45)] transition-all group"
+                title="Click mentor for advice + confetti!"
+              >
+                {/* Top Meta Bar */}
+                <div className="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-neutral-800">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span className="font-mono text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase font-bold">
+                      MENTOR.DISPATCH // 0{mascotQuoteIndex + 1}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-neutral-900 border border-neutral-700 text-neutral-300 font-mono text-[9px] group-hover:bg-white group-hover:text-black group-hover:border-white transition-colors font-semibold">
+                    <span>TAP TO CYCLE</span>
+                    <span className="font-bold">↻</span>
+                  </div>
+                </div>
 
-              {/* Interactive Click Tip Pill - IN FRONT AT z-25 */}
-              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-25 bg-white text-black border-2 border-black text-[10px] px-3.5 py-1 rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-mono whitespace-nowrap flex items-center gap-1.5 font-bold">
-                <Sparkles className="w-3 h-3 text-black animate-spin" />
-                <span>TAP MENTOR ({clickCount > 0 ? `${clickCount}x clicked` : 'ADVICE & CONFETTI'})</span>
-              </div>
+                {/* Punchy Desi Quote in Authentic SF Pro Display Font */}
+                <p className="text-white font-sans font-semibold text-[11px] sm:text-[13.5px] leading-snug tracking-tight antialiased">
+                  {MASCOT_QUOTES[mascotQuoteIndex]}
+                </p>
+
+                {/* Bottom Subtle Speech Pointer Tail pointing down towards mentor */}
+                <div className="absolute -bottom-2 right-16 w-3.5 h-3.5 bg-[#0A0A0A] border-r border-b border-neutral-700/80 rotate-45 transform"></div>
+              </motion.div>
+
+              {/* Mascot Image Container with Scroll Scale & 3D Interactive Tilt */}
+              <motion.div
+                style={{
+                  scale: combinedMascotScale,
+                  rotateX,
+                  rotateY,
+                  transformPerspective: 1000,
+                }}
+                onClick={handleMascotClick}
+                whileTap={{ scale: 0.94 }}
+                className="relative w-full max-w-[130px] sm:max-w-[240px] lg:max-w-[360px] cursor-pointer group"
+                title="Click mentor for motivation + confetti!"
+              >
+                {/* Floating Badge 1: Stark Black Card - BEHIND (z-10) */}
+                <motion.div
+                  style={{ scale: totalBadgeScale }}
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                  className="hidden sm:flex absolute bottom-3 -left-2 sm:bottom-4 sm:-left-4 z-10 bg-black text-white p-2 sm:p-3 rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.3)] border border-neutral-800 items-center gap-2 sm:gap-2.5 text-xs hover:scale-105 transition-transform scale-90 sm:scale-100 origin-bottom-left"
+                >
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-neutral-900 text-amber-400 flex items-center justify-center font-bold border border-neutral-800 shrink-0">
+                    <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-white block font-sans tracking-tight text-[10px] sm:text-[11px] whitespace-nowrap">5-Day Study Streak</span>
+                    <span className="text-[8px] sm:text-[9px] text-neutral-400 font-mono">+75 XP TODAY</span>
+                  </div>
+                </motion.div>
+
+                {/* Floating Badge 2: Crisp White Card with 2px Black Border - BEHIND (z-10) */}
+                <motion.div
+                  style={{ scale: totalBadgeScale }}
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+                  className="hidden sm:flex absolute top-10 -right-2 sm:top-16 sm:-right-4 z-10 bg-white text-black p-2 sm:p-3 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black items-center gap-2 sm:gap-2.5 text-xs hover:scale-105 transition-transform scale-90 sm:scale-100 origin-top-right"
+                >
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-black text-white flex items-center justify-center font-bold font-mono text-[10px] sm:text-xs shrink-0">
+                    ⚡
+                  </div>
+                  <div>
+                    <span className="font-bold text-black block font-sans tracking-tight text-[10px] sm:text-[11px] whitespace-nowrap">Calculus Midterm</span>
+                    <span className="text-[8px] sm:text-[9px] text-neutral-600 font-mono font-semibold whitespace-nowrap">In 6 Days • Target A</span>
+                  </div>
+                </motion.div>
+
+                {/* Mascot Cutout Image without background - IN FRONT AT z-20 */}
+                <img
+                  src="/padhlo-mascot.png"
+                  alt="PadhloShawtys Mentor"
+                  className="relative z-20 w-full h-auto drop-shadow-[0_25px_35px_rgba(0,0,0,0.18)] group-hover:drop-shadow-[0_30px_45px_rgba(0,0,0,0.28)] transition-all duration-300 select-none pointer-events-auto"
+                  draggable={false}
+                />
+
+                {/* Interactive Click Tip Pill - IN FRONT AT z-25 */}
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-25 bg-white text-black border-2 border-black text-[10px] px-3.5 py-1 rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-mono whitespace-nowrap flex items-center gap-1.5 font-bold">
+                  <Sparkles className="w-3 h-3 text-black animate-spin" />
+                  <span>TAP MENTOR ({clickCount > 0 ? `${clickCount}x clicked` : 'ADVICE & CONFETTI'})</span>
+                </div>
+              </motion.div>
             </motion.div>
           </div>
-        </div>
-      </section>
+
+          {/* Scroll Indicator Prompt */}
+          <motion.div
+            style={{
+              opacity: scrollPromptOpacity,
+              y: scrollPromptY,
+            }}
+            onClick={() => window.scrollBy({ top: window.innerHeight * 0.75, behavior: 'smooth' })}
+            className={`absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-30 select-none group ${
+              isPromptDismissed ? 'pointer-events-none' : 'pointer-events-auto cursor-pointer'
+            }`}
+          >
+            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white text-[11px] font-mono font-bold tracking-wider uppercase shadow-[0_8px_20px_rgba(0,0,0,0.3)] border border-neutral-700 group-hover:scale-105 transition-transform">
+              <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400 animate-pulse" />
+              <span>Scroll to Lock In ↓</span>
+            </div>
+            <div className="w-4 h-7 rounded-full border-2 border-neutral-400 flex items-start justify-center p-0.5 opacity-70">
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-1 h-1.5 rounded-full bg-black"
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
 
       {/* 2. The 4 Main Focus Areas (Clean, Simple, 0 Clutter) */}
       <section className="space-y-8">

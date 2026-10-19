@@ -20,11 +20,11 @@ const MainContent: React.FC = () => {
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFD] dark:bg-[#08090E] text-slate-900 dark:text-slate-100 transition-colors duration-300 bg-mesh-gradient">
+    <div className="min-h-screen flex flex-col bg-[#FAFAFD] dark:bg-[#08090E] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 bg-mesh-gradient">
       <ScrollProgress />
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
         {activeTab === 'landing' && <LandingView />}
 
         {activeTab === 'login' && <LoginView />}

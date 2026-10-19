@@ -143,7 +143,7 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-120px)] flex flex-col justify-center py-6 sm:py-10 animate-in fade-in duration-300">
+    <div className="relative min-h-[calc(100vh-120px)] flex flex-col justify-center py-6 sm:py-10 animate-in fade-in duration-300 overflow-x-clip">
       {/* Clean monochrome background dot matrix */}
       <div className="absolute inset-0 bg-dot-pattern opacity-60 pointer-events-none -z-10" />
 
@@ -405,12 +405,12 @@ export const LoginView: React.FC = () => {
             }}
             whileHover={{ scale: 1.12, rotate: 0 }}
             onClick={handleMascotClick}
-            className="absolute -top-6 -left-4 sm:-top-2 sm:-left-8 lg:-left-12 z-10 max-w-[210px] sm:max-w-[250px] bg-black text-white p-3.5 sm:p-4 rounded-2xl border-2 border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] cursor-pointer hover:border-white transition-all group"
+            className="absolute -top-4 -left-2 sm:-top-2 sm:-left-8 lg:-left-12 z-10 max-w-[170px] sm:max-w-[250px] bg-black text-white p-2.5 sm:p-4 rounded-2xl border-2 border-neutral-700 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] cursor-pointer hover:border-white transition-all group"
             title="Click for insult"
           >
-            <div className="flex items-start gap-2">
-              <span className="text-xl">💀</span>
-              <p className="font-sans font-black text-xs sm:text-[13px] leading-tight tracking-tight uppercase text-white">
+            <div className="flex items-start gap-1.5 sm:gap-2">
+              <span className="text-base sm:text-xl">💀</span>
+              <p className="font-sans font-black text-[10px] sm:text-[13px] leading-tight tracking-tight uppercase text-white">
                 BHAI REEL SCROLL KARKE PASS HONE KA PLAN HAI KYA?
               </p>
             </div>
@@ -427,12 +427,12 @@ export const LoginView: React.FC = () => {
             }}
             whileHover={{ scale: 1.12, rotate: 0 }}
             onClick={handleMascotClick}
-            className="absolute -top-2 -right-2 sm:top-2 sm:-right-8 lg:-right-12 z-10 max-w-[210px] sm:max-w-[250px] bg-white text-black p-3.5 sm:p-4 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:bg-neutral-50 transition-all group"
+            className="absolute -top-2 -right-2 sm:top-2 sm:-right-8 lg:-right-12 z-10 max-w-[170px] sm:max-w-[250px] bg-white text-black p-2.5 sm:p-4 rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:bg-neutral-50 transition-all group"
             title="Click for insult"
           >
-            <div className="flex items-start gap-2">
-              <span className="text-xl">📉</span>
-              <p className="font-sans font-black text-xs sm:text-[13px] leading-tight tracking-tight uppercase text-black">
+            <div className="flex items-start gap-1.5 sm:gap-2">
+              <span className="text-base sm:text-xl">📉</span>
+              <p className="font-sans font-black text-[10px] sm:text-[13px] leading-tight tracking-tight uppercase text-black">
                 AURA -10,000 IF YOU CLOSE THIS TAB RIGHT NOW
               </p>
             </div>
@@ -449,7 +449,7 @@ export const LoginView: React.FC = () => {
             }}
             whileHover={{ scale: 1.12, rotate: 0 }}
             onClick={handleMascotClick}
-            className="absolute top-[35%] -left-6 sm:-left-12 lg:-left-16 z-10 max-w-[190px] sm:max-w-[230px] bg-white text-black p-3 sm:p-3.5 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:bg-neutral-50 transition-all group"
+            className="hidden sm:block absolute top-[35%] -left-6 sm:-left-12 lg:-left-16 z-10 max-w-[190px] sm:max-w-[230px] bg-white text-black p-3 sm:p-3.5 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:bg-neutral-50 transition-all group"
             title="Click for insult"
           >
             <div className="flex items-start gap-2">
@@ -471,7 +471,7 @@ export const LoginView: React.FC = () => {
             }}
             whileHover={{ scale: 1.12, rotate: 0 }}
             onClick={handleMascotClick}
-            className="absolute top-[40%] -right-6 sm:-right-10 lg:-right-14 z-10 max-w-[200px] sm:max-w-[240px] bg-black text-white p-3.5 rounded-2xl border-2 border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] cursor-pointer hover:border-white transition-all group"
+            className="hidden sm:block absolute top-[40%] -right-6 sm:-right-10 lg:-right-14 z-10 max-w-[200px] sm:max-w-[240px] bg-black text-white p-3.5 rounded-2xl border-2 border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] cursor-pointer hover:border-white transition-all group"
             title="Click for insult"
           >
             <div className="flex items-start gap-2">
@@ -493,12 +493,12 @@ export const LoginView: React.FC = () => {
             }}
             whileHover={{ scale: 1.12, rotate: 0 }}
             onClick={handleMascotClick}
-            className="absolute bottom-8 -left-4 sm:bottom-12 sm:-left-8 lg:-left-12 z-10 max-w-[210px] sm:max-w-[240px] bg-black text-white p-3.5 sm:p-4 rounded-2xl border-2 border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] cursor-pointer hover:border-white transition-all group"
+            className="absolute bottom-4 -left-2 sm:bottom-12 sm:-left-8 lg:-left-12 z-10 max-w-[170px] sm:max-w-[240px] bg-black text-white p-2.5 sm:p-4 rounded-2xl border-2 border-neutral-700 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] cursor-pointer hover:border-white transition-all group"
             title="Click for insult"
           >
-            <div className="flex items-start gap-2">
-              <span className="text-xl">🚨</span>
-              <p className="font-sans font-black text-xs sm:text-[13px] leading-tight tracking-tight uppercase text-white">
+            <div className="flex items-start gap-1.5 sm:gap-2">
+              <span className="text-base sm:text-xl">🚨</span>
+              <p className="font-sans font-black text-[10px] sm:text-[13px] leading-tight tracking-tight uppercase text-white">
                 STOP LARPING AS A TOPPER. LOGIN KAR ABHI!
               </p>
             </div>
@@ -515,12 +515,12 @@ export const LoginView: React.FC = () => {
             }}
             whileHover={{ scale: 1.12, rotate: 0 }}
             onClick={handleMascotClick}
-            className="absolute -bottom-4 right-0 sm:bottom-4 sm:-right-4 lg:-right-8 z-10 max-w-[220px] sm:max-w-[250px] bg-white text-black p-3.5 sm:p-4 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:bg-neutral-50 transition-all group"
+            className="absolute -bottom-2 right-0 sm:bottom-4 sm:-right-4 lg:-right-8 z-10 max-w-[170px] sm:max-w-[250px] bg-white text-black p-2.5 sm:p-4 rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:bg-neutral-50 transition-all group"
             title="Click for insult"
           >
-            <div className="flex items-start gap-2">
-              <Flame className="w-5 h-5 text-amber-500 fill-amber-500 shrink-0 mt-0.5" />
-              <p className="font-sans font-black text-xs sm:text-[13px] leading-tight tracking-tight uppercase text-black">
+            <div className="flex items-start gap-1.5 sm:gap-2">
+              <Flame className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 fill-amber-500 shrink-0 mt-0.5" />
+              <p className="font-sans font-black text-[10px] sm:text-[13px] leading-tight tracking-tight uppercase text-black">
                 EXAM HALL ME CEILING GINNE KA SHOUK HAI?
               </p>
             </div>
@@ -535,7 +535,7 @@ export const LoginView: React.FC = () => {
             exit={{ opacity: 0 }}
             onClick={handleMascotClick}
             whileTap={{ scale: 0.95 }}
-            className="relative z-10 mb-2 bg-[#0A0A0A] text-white p-4 rounded-2xl shadow-[0_20px_45px_-10px_rgba(0,0,0,0.4)] border border-neutral-700 max-w-sm cursor-pointer hover:border-neutral-400 transition-all group"
+            className="relative z-10 mb-2 bg-[#0A0A0A] text-white p-3 sm:p-4 rounded-2xl shadow-[0_20px_45px_-10px_rgba(0,0,0,0.4)] border border-neutral-700 max-w-[290px] sm:max-w-sm cursor-pointer hover:border-neutral-400 transition-all group"
             title="Click to cycle scoldings!"
           >
             <div className="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-neutral-800">
@@ -576,7 +576,7 @@ export const LoginView: React.FC = () => {
             transition={{ type: 'spring', stiffness: 100, damping: 16, delay: 0.15 }}
             onClick={handleMascotClick}
             whileTap={{ scale: 0.94 }}
-            className="relative z-20 w-full max-w-[420px] sm:max-w-[480px] lg:max-w-[530px] cursor-pointer group"
+            className="relative z-20 w-full max-w-[280px] sm:max-w-[420px] lg:max-w-[530px] cursor-pointer group"
             title="Click big mentor to scold you!"
           >
             {/* The Cutout Person without background - in front of comments */}

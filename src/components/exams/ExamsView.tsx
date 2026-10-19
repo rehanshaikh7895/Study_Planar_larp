@@ -257,9 +257,9 @@ export const ExamsView: React.FC = () => {
                 className="rounded-3xl bg-white border border-neutral-200/90 shadow-sm hover:shadow-md transition-all overflow-hidden"
               >
                 {/* Main Card Header Banner */}
-                <div className="p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-neutral-100">
+                <div className="p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-5 sm:gap-6 border-b border-neutral-100">
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                       {subject && (
                         <span
                           className="text-[10px] font-bold px-2.5 py-0.5 rounded-md"
@@ -288,9 +288,9 @@ export const ExamsView: React.FC = () => {
                       {exam.name}
                     </h2>
 
-                    <div className="flex items-center gap-3 text-xs text-neutral-500 font-mono">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-neutral-500 font-mono">
                       <span className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-black" />
+                        <Calendar className="w-3.5 h-3.5 text-black shrink-0" />
                         {exam.examDate} at {exam.examTime || '09:00'}
                       </span>
                       <span>•</span>
@@ -299,7 +299,7 @@ export const ExamsView: React.FC = () => {
                   </div>
 
                   {/* Countdown Digital Display */}
-                  <div className="flex items-center gap-2 self-start lg:self-center">
+                  <div className="flex items-center gap-1.5 sm:gap-2 self-start lg:self-center overflow-x-auto max-w-full pb-0.5">
                     {[
                       { val: countdown.days, label: 'DAYS' },
                       { val: countdown.hours, label: 'HRS' },
@@ -308,12 +308,12 @@ export const ExamsView: React.FC = () => {
                     ].map((unit, i) => (
                       <div
                         key={i}
-                        className="flex flex-col items-center justify-center w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-neutral-50 border border-neutral-200 text-center shadow-xs"
+                        className="flex flex-col items-center justify-center w-14 h-14 sm:w-18 sm:h-18 rounded-2xl bg-neutral-50 border border-neutral-200 text-center shadow-xs shrink-0"
                       >
-                        <span className="font-mono text-xl sm:text-2xl font-black text-black tabular-nums">
+                        <span className="font-mono text-base sm:text-2xl font-black text-black tabular-nums">
                           {String(unit.val).padStart(2, '0')}
                         </span>
-                        <span className="text-[9px] font-mono font-bold text-neutral-400 tracking-wider">
+                        <span className="text-[8px] sm:text-[9px] font-mono font-bold text-neutral-400 tracking-wider">
                           {unit.label}
                         </span>
                       </div>
@@ -322,7 +322,7 @@ export const ExamsView: React.FC = () => {
                 </div>
 
                 {/* Progress & Weak Topics Bar */}
-                <div className="px-6 py-4 bg-neutral-50/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border-b border-neutral-100">
+                <div className="px-4 sm:px-6 py-3.5 sm:py-4 bg-neutral-50/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border-b border-neutral-100">
                   <div className="flex-1 max-w-md space-y-1">
                     <div className="flex justify-between text-neutral-700 font-medium">
                       <span>Syllabus Mastered:</span>

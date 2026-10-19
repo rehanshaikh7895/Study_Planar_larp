@@ -282,9 +282,9 @@ export const FocusTimerView: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Pomodoro Focus Timer (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="rounded-3xl bg-white border border-neutral-200 p-6 sm:p-8 flex flex-col items-center text-center shadow-xs">
+          <div className="rounded-3xl bg-white border border-neutral-200 p-4 sm:p-8 flex flex-col items-center text-center shadow-xs">
             {/* Mode Switcher Tabs */}
-            <div className="flex items-center gap-1 p-1 rounded-2xl bg-neutral-100 border border-neutral-200 mb-6">
+            <div className="flex items-center gap-1 p-1 rounded-2xl bg-neutral-100 border border-neutral-200 mb-5 sm:mb-6 overflow-x-auto max-w-full">
               <button
                 onClick={() => {
                   if (mode !== 'focus') {
@@ -293,7 +293,7 @@ export const FocusTimerView: React.FC = () => {
                     setTimeLeft(focusSeconds);
                   }
                 }}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                   mode === 'focus'
                     ? 'bg-black text-white shadow-xs'
                     : 'text-neutral-600 hover:text-black'
@@ -311,7 +311,7 @@ export const FocusTimerView: React.FC = () => {
                     setTimeLeft(shortBreakSeconds);
                   }
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                   mode === 'short_break'
                     ? 'bg-neutral-800 text-white shadow-xs'
                     : 'text-neutral-600 hover:text-black'
@@ -328,7 +328,7 @@ export const FocusTimerView: React.FC = () => {
                     setTimeLeft(longBreakSeconds);
                   }
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                   mode === 'long_break'
                     ? 'bg-neutral-800 text-white shadow-xs'
                     : 'text-neutral-600 hover:text-black'
@@ -368,11 +368,11 @@ export const FocusTimerView: React.FC = () => {
             )}
 
             {/* Circular SVG Timer */}
-            <div className="relative flex items-center justify-center my-3">
-              <svg className="w-64 h-64 -rotate-90">
+            <div className="relative flex items-center justify-center my-2 sm:my-3">
+              <svg className="w-56 h-56 sm:w-64 sm:h-64 -rotate-90" viewBox="0 0 280 280">
                 <circle
-                  cx="50%"
-                  cy="50%"
+                  cx="140"
+                  cy="140"
                   r={radius}
                   className="stroke-neutral-100"
                   strokeWidth="10"
@@ -380,8 +380,8 @@ export const FocusTimerView: React.FC = () => {
                 />
 
                 <circle
-                  cx="50%"
-                  cy="50%"
+                  cx="140"
+                  cy="140"
                   r={radius}
                   className={`transition-all duration-300 ${
                     mode === 'focus' ? 'stroke-black' : 'stroke-neutral-700'
@@ -404,7 +404,7 @@ export const FocusTimerView: React.FC = () => {
                     : 'DEEP RECHARGE'}
                 </span>
 
-                <h2 className="text-5xl font-mono font-black tracking-tight text-black tabular-nums">
+                <h2 className="text-4xl sm:text-5xl font-mono font-black tracking-tight text-black tabular-nums">
                   {formatTime(timeLeft)}
                 </h2>
 
