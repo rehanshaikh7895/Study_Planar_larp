@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   motion,
   AnimatePresence,
-  useScroll,
   useTransform,
   useSpring,
   useMotionValue,
@@ -53,63 +52,166 @@ export const LandingView: React.FC = () => {
   const lastClickTimeRef = useRef<number>(0);
   const comboTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const heroContainerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroContainerRef,
-    offset: ['start start', 'end end'],
-  });
-
-  // Responsive, silky-smooth spring interpolation
-  const smoothProgress = useSpring(scrollYProgress, {
+  const fadeProgressMotion = useMotionValue(0);
+  const smoothFadeProgress = useSpring(fadeProgressMotion, {
     stiffness: 260,
     damping: 28,
-    restDelta: 0.0005,
+    restDelta: 0.001,
   });
 
-  // 1. Title scroll blur fade-in & scale
-  // Phase 1 (0 -> 0.22): Smooth fade-in & unblur (visible at 0.35 opacity initially, never missing)
-  // Phase 2 (0.22 -> 0.88): 100% VISIBLE, CRISP, AND FULLY PINNED PLATEAU!
-  // Phase 3 (0.88 -> 1.0): Gentle exit as overall website scrolls down
-  const titleBlur = useTransform(smoothProgress, [0, 0.22], [14, 0]);
-  const titleOpacity = useTransform(smoothProgress, [0, 0.20], [0.35, 1]);
-  const titleScale = useTransform(smoothProgress, [0, 0.22], [0.94, 1]);
-  const titleY = useTransform(smoothProgress, [0, 0.22], [18, 0]);
+  const isUnlockedRef = useRef(false);
+  const [isFullyRevealed, setIsFullyRevealed] = useState(false);
+
+  // 1. Title scroll blur fade-in & scale:
+  // Starts with an atmospheric focus blur, smoothly unblurs & scales as user scrolls
+  const titleBlur = useTransform(smoothFadeProgress, [0, 0.95], [18, 0]);
+  const titleOpacity = useTransform(smoothFadeProgress, [0, 0.85], [0.18, 1]);
+  const titleScale = useTransform(smoothFadeProgress, [0, 0.95], [0.92, 1]);
+  const titleY = useTransform(smoothFadeProgress, [0, 0.95], [20, 0]);
   const titleFilter = useMotionTemplate`blur(${titleBlur}px)`;
 
   // 2. Subtitle scroll blur fade-in & slide-up
-  const subtitleBlur = useTransform(smoothProgress, [0, 0.25], [10, 0]);
-  const subtitleOpacity = useTransform(smoothProgress, [0, 0.22], [0.3, 1]);
-  const subtitleY = useTransform(smoothProgress, [0, 0.25], [14, 0]);
+  const subtitleBlur = useTransform(smoothFadeProgress, [0.08, 0.95], [12, 0]);
+  const subtitleOpacity = useTransform(smoothFadeProgress, [0.08, 0.85], [0.15, 1]);
+  const subtitleY = useTransform(smoothFadeProgress, [0.08, 0.95], [16, 0]);
   const subtitleFilter = useMotionTemplate`blur(${subtitleBlur}px)`;
 
   // 3. CTA Buttons & Social Proof
-  const ctaOpacity = useTransform(smoothProgress, [0.04, 0.26], [0.3, 1]);
-  const ctaY = useTransform(smoothProgress, [0.04, 0.26], [12, 0]);
-  const ctaScale = useTransform(smoothProgress, [0.04, 0.26], [0.96, 1]);
+  const ctaOpacity = useTransform(smoothFadeProgress, [0.18, 0.9], [0, 1]);
+  const ctaY = useTransform(smoothFadeProgress, [0.18, 0.9], [14, 0]);
+  const ctaScale = useTransform(smoothFadeProgress, [0.18, 0.9], [0.95, 1]);
 
   // 4. Mascot scroll unblur & scale
-  const mascotBlur = useTransform(smoothProgress, [0, 0.22], [10, 0]);
-  const mascotOpacity = useTransform(smoothProgress, [0, 0.20], [0.5, 1]);
-  const mascotScrollScale = useTransform(smoothProgress, [0, 0.28], [0.94, 1.02]);
+  const mascotBlur = useTransform(smoothFadeProgress, [0, 0.95], [12, 0]);
+  const mascotOpacity = useTransform(smoothFadeProgress, [0, 0.85], [0.3, 1]);
+  const mascotScrollScale = useTransform(smoothFadeProgress, [0, 1], [0.92, 1.03]);
   const mascotFilter = useMotionTemplate`blur(${mascotBlur}px)`;
 
   // 5. Scroll Prompt Pill at bottom: visible initially, fades out as user begins scroll
-  const scrollPromptOpacity = useTransform(smoothProgress, [0, 0.10], [1, 0]);
-  const scrollPromptY = useTransform(smoothProgress, [0, 0.10], [0, 10]);
-  const [isPromptDismissed, setIsPromptDismissed] = useState(false);
-  useEffect(() => {
-    return smoothProgress.on('change', (v) => {
-      setIsPromptDismissed(v > 0.12);
-    });
-  }, [smoothProgress]);
-
-  // 6. Section Exit: only after 0.88 does it gently lift
-  const heroExitY = useTransform(smoothProgress, [0.88, 1.0], [0, -22]);
-  const heroExitOpacity = useTransform(smoothProgress, [0.94, 1.0], [1, 0.95]);
+  const scrollPromptOpacity = useTransform(smoothFadeProgress, [0, 0.35], [1, 0]);
+  const scrollPromptY = useTransform(smoothFadeProgress, [0, 0.35], [0, 10]);
 
   // Dynamic scale for badges/comments behind the mascot (combines scroll & rapid clicks)
-  const badgeScrollScale = useTransform(smoothProgress, [0, 0.28], [0.95, 1.05]);
+  const badgeScrollScale = useTransform(smoothFadeProgress, [0, 1], [0.95, 1.05]);
   const smoothBadgeScrollScale = useSpring(badgeScrollScale, { stiffness: 160, damping: 20 });
+
+  // Scroll lock effect:
+  // Prevents overall website from scrolling forward until the whole title is completely faded in!
+  useEffect(() => {
+    // If user is already scrolled down on initial mount (e.g. reload or back button), unlock immediately
+    if (window.scrollY > 20) {
+      fadeProgressMotion.set(1);
+      isUnlockedRef.current = true;
+      setIsFullyRevealed(true);
+      return;
+    }
+
+    let touchStartY = 0;
+    const SCROLL_THRESHOLD = 200; // Scroll distance needed to complete the fade in
+
+    const handleWheel = (e: WheelEvent) => {
+      // If already unlocked, allow normal window scrolling
+      if (isUnlockedRef.current) return;
+
+      // Only lock if we are at the top of the homepage
+      if (window.scrollY <= 5) {
+        if (e.deltaY > 0) {
+          // User scrolling down: advance title fade in
+          const current = fadeProgressMotion.get();
+          if (current < 1) {
+            e.preventDefault();
+            const next = Math.min(1, current + e.deltaY / SCROLL_THRESHOLD);
+            fadeProgressMotion.set(next);
+            if (next >= 1) {
+              isUnlockedRef.current = true;
+              setIsFullyRevealed(true);
+            }
+          }
+        } else if (e.deltaY < 0) {
+          // User scrolling up while at top
+          const current = fadeProgressMotion.get();
+          if (current > 0 && current < 1) {
+            e.preventDefault();
+            const next = Math.max(0, current + e.deltaY / SCROLL_THRESHOLD);
+            fadeProgressMotion.set(next);
+          }
+        }
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (isUnlockedRef.current) return;
+
+      if (window.scrollY <= 5) {
+        const deltaY = touchStartY - e.touches[0].clientY;
+        const current = fadeProgressMotion.get();
+        if (deltaY > 0 && current < 1) {
+          // Swiping up to scroll down: advance title fade in
+          e.preventDefault();
+          const next = Math.min(1, current + deltaY / 160);
+          fadeProgressMotion.set(next);
+          touchStartY = e.touches[0].clientY;
+          if (next >= 1) {
+            isUnlockedRef.current = true;
+            setIsFullyRevealed(true);
+          }
+        } else if (deltaY < 0 && current > 0 && current < 1) {
+          e.preventDefault();
+          const next = Math.max(0, current + deltaY / 160);
+          fadeProgressMotion.set(next);
+          touchStartY = e.touches[0].clientY;
+        }
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isUnlockedRef.current) return;
+      if (window.scrollY <= 5) {
+        if (e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+          const current = fadeProgressMotion.get();
+          if (current < 1) {
+            e.preventDefault();
+            const next = Math.min(1, current + 0.35);
+            fadeProgressMotion.set(next);
+            if (next >= 1) {
+              isUnlockedRef.current = true;
+              setIsFullyRevealed(true);
+            }
+          }
+        }
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [fadeProgressMotion]);
+
+  const handleScrollPromptClick = () => {
+    fadeProgressMotion.set(1);
+    isUnlockedRef.current = true;
+    setIsFullyRevealed(true);
+    setTimeout(() => {
+      const target = document.getElementById('focus-areas-section');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollBy({ top: 400, behavior: 'smooth' });
+      }
+    }, 200);
+  };
 
   const comboMotion = useMotionValue(1);
   const smoothComboScale = useSpring(comboMotion, { stiffness: 320, damping: 16 });
@@ -150,6 +252,13 @@ export const LandingView: React.FC = () => {
   };
 
   const handleMascotClick = (e?: React.MouseEvent) => {
+    // If title is not yet fully revealed, clicking mentor unlocks and reveals immediately!
+    if (!isUnlockedRef.current) {
+      fadeProgressMotion.set(1);
+      isUnlockedRef.current = true;
+      setIsFullyRevealed(true);
+    }
+
     const now = Date.now();
     const isRapid = now - lastClickTimeRef.current < 1200;
     const nextCombo = isRapid ? Math.min(clickCombo + 1, 10) : 1;
@@ -208,17 +317,13 @@ export const LandingView: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-20 sm:space-y-24 pb-16 animate-in fade-in duration-300 overflow-x-clip">
-      {/* 1. Hero Section with Scroll-Pinned Blur Fade-In */}
-      <div ref={heroContainerRef} className="relative h-[220vh] sm:h-[260vh] lg:h-[280vh] -mt-4">
-        <motion.div
-          style={{ y: heroExitY, opacity: heroExitOpacity }}
-          className="sticky top-14 sm:top-20 h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-5.5rem)] flex flex-col justify-center overflow-hidden"
-        >
-          {/* Subtle, clean monochrome dot background */}
-          <div className="absolute inset-0 bg-dot-pattern opacity-60 pointer-events-none -z-10" />
+    <div className="space-y-16 sm:space-y-20 pb-16 animate-in fade-in duration-300 overflow-x-clip">
+      {/* 1. Hero Section with Scroll-Driven Blur Fade-In (ZERO BLANK SPACE) */}
+      <div className="relative min-h-[calc(100vh-4.5rem)] sm:min-h-[calc(100vh-5rem)] flex flex-col justify-center py-6 sm:py-10">
+        {/* Subtle, clean monochrome dot background */}
+        <div className="absolute inset-0 bg-dot-pattern opacity-60 pointer-events-none -z-10" />
 
-          <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-10 items-center px-2 sm:px-4">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-10 items-center px-2 sm:px-4">
             {/* Left Column: Headlines & CTAs with Scroll-Driven Blur Fade-In */}
             <div className="lg:col-span-7 space-y-3 sm:space-y-6 text-left">
               {/* The Main Title requested by User: Crisp Black-and-White Streetwear / Editorial typography with Scroll Blur Fade-In */}
@@ -481,34 +586,33 @@ export const LandingView: React.FC = () => {
             </motion.div>
           </div>
 
-          {/* Scroll Indicator Prompt */}
-          <motion.div
-            style={{
-              opacity: scrollPromptOpacity,
-              y: scrollPromptY,
-            }}
-            onClick={() => window.scrollBy({ top: window.innerHeight * 0.75, behavior: 'smooth' })}
-            className={`absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-30 select-none group ${
-              isPromptDismissed ? 'pointer-events-none' : 'pointer-events-auto cursor-pointer'
-            }`}
-          >
-            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white text-[11px] font-mono font-bold tracking-wider uppercase shadow-[0_8px_20px_rgba(0,0,0,0.3)] border border-neutral-700 group-hover:scale-105 transition-transform">
-              <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400 animate-pulse" />
-              <span>Scroll to Lock In ↓</span>
-            </div>
-            <div className="w-4 h-7 rounded-full border-2 border-neutral-400 flex items-start justify-center p-0.5 opacity-70">
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-                className="w-1 h-1.5 rounded-full bg-black"
-              />
-            </div>
-          </motion.div>
+        {/* Scroll Indicator Prompt */}
+        <motion.div
+          style={{
+            opacity: scrollPromptOpacity,
+            y: scrollPromptY,
+          }}
+          onClick={handleScrollPromptClick}
+          className={`absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-30 select-none group ${
+            isFullyRevealed ? 'pointer-events-none opacity-0' : 'pointer-events-auto cursor-pointer'
+          }`}
+        >
+          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white text-[11px] font-mono font-bold tracking-wider uppercase shadow-[0_8px_20px_rgba(0,0,0,0.3)] border border-neutral-700 group-hover:scale-105 transition-transform">
+            <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400 animate-pulse" />
+            <span>Scroll to Reveal Title ↓</span>
+          </div>
+          <div className="w-4 h-7 rounded-full border-2 border-neutral-400 flex items-start justify-center p-0.5 opacity-70">
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-1 h-1.5 rounded-full bg-black"
+            />
+          </div>
         </motion.div>
       </div>
 
-      {/* 2. The 4 Main Focus Areas (Clean, Simple, 0 Clutter) */}
-      <section className="space-y-8">
+      {/* 2. The 4 Main Focus Areas (Clean, Simple, 0 Clutter - ZERO BLANK SPACE) */}
+      <section id="focus-areas-section" className="space-y-8 pt-2">
         <div className="text-center space-y-3 max-w-2xl mx-auto">
           <h2 className="text-3xl sm:text-5xl font-sans font-black tracking-tight text-black">
             Only 4 Steps. Zero Fluff.
